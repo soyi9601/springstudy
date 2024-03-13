@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+  <bean class="com.gdu.prj01.xml02.Student"
+        id="student"
+        scope="singleton">
+    
+    <property name="scores">
+      <list>
+        <value>90</value>
+        <value>91</value>
+        <value>92</value>
+      </list>
+    </property>
+    
+    <property name="contacts">
+      <set>
+        <value>000-1111-1111</value>
+        <value>111-1111-1112</value>
+        <value>222-1111-1113</value>
+      </set>
+    </property>
+    
+    <property name="friends">
+      <map>
+        <entry key="동네친구" value="11"></entry>
+        <entry key="운동친구" value="22"></entry>
+      </map>
+    </property>
+  
+  </bean>
+
+
+</beans>
