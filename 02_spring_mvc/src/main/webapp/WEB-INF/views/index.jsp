@@ -21,6 +21,31 @@
     <a href="${contextPath}/article/detail2.do">article 상세2</a>
     <a href="${contextPath}/article/detail3.do?article_no=10">article 상세3</a>
   </div>
+  
+  <%-- MyController4 --%>
+  <div>
+    <a href="${contextPath}/blog/list.do">블로그 목록</a>
+  </div>
+  
+  <%-- MyController5 --%>
+  <div>
+    <a href="${contextPath}/faq/add.do">FAQ 등록</a>
+    <a href="${contextPath}/faq/modify.do">FAQ 수정</a>
+  </div>
+
+  <%-- MyController6 --%>
+  <div>
+    <c:if test="${sessionScope.user == null}">
+      <a href="${contextPath}/user/login1.do">로그인1</a>
+      <!-- login.do?redirectURL=/main.do : 로그인 후 열려있던 현재 페이지로 돌아오고 싶을 때 -->
+      <a href="${contextPath}/user/login2.do">로그인2</a>
+    </c:if>
+    <c:if test="${sessionScope.user != null}">
+      <span><a href="${contextPath}/user/mypage.do">${sessionScope.user.userEmail}</a>님 반갑습니다.</span>
+      <a href="${contextPath}/user/logout1.do">로그아웃1</a>
+      <a href="${contextPath}/user/logout2.do">로그아웃2</a>
+    </c:if>
+  </div>
 
 </body>
 </html>
