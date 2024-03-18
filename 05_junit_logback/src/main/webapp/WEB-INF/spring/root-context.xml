@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans https://www.springframework.org/schema/beans/spring-beans.xsd">
+	
+	<!-- Root Context: defines shared resources visible to all other web components -->
+  <!-- Root Context : 스프링 컨테이너 -->
+		
+  <bean class="com.zaxxer.hikari.HikariConfig"
+        id="hikariConfig"
+        scope="singleton">  
+     <!-- setter 를 이용한 것 -> property -->
+    <property name="driverClassName" value="oracle.jdbc.OracleDriver" />
+    <property name="jdbcUrl" value="jdbc:oracle:thin:@localhost:1521:xe" />
+    <property name="username" value="GD" />
+    <property name="password" value="1111" />
+  </bean>
+  
+  <bean class="com.zaxxer.hikari.HikariDataSource"
+        id="hikariDataSource"
+        scope="singleton">
+     <!-- 생성자를 이용한 것 -> contructor-arg -->
+    <constructor-arg ref="hikariConfig" />
+  </bean>
+  
+  <!-- 
+  jsp          / servlet
+  Sqlseessoion / SqlSessionFactory
+  spring
+  SqlSessionTemplate/ SqlSessionFactory
+   -->
+   <bean class="org.mybatis.spring.SqlSessionFactoryBean"
+         id="sqlSessionFactoryBean"
+         scope="singleton">
+    <!-- setter를 이용 -->
+    <property name="dataSource" ref="hikariDataSource" />
+    <property name="configLocation" value="com/gdu/prj05/mybatis/config/mybatis-config.xml" />   <!-- 경로 작성 시 . 을 쓰면 안됨. 확장자에 .xml 이기 때문에 경로로 인식하지 못하고 파일이름인지, 패키지이름인지 구분할 수 없음 -->
+    <property name="mapperLocations" value="com/gdu/prj05/mybatis/mapper/*.xml" />    <!-- mapper 는 여러개가 들어 있을 수 있기 때문에 *.xml (모든 .xml 파일)로 불러올 수 있다.  -->
+   </bean>
+    
+    <!-- bean 작성만 하면 오류가 뜨는데 생성자가 없어서 생기는 오류 -> 그래서 comstuctor-arg 를 이용 -->
+    <bean class="org.mybatis.spring.SqlSessionTemplate"
+          id="sqlSessionTemplate"
+          scope="singleton">
+      <constructor-arg ref="sqlSessionFactoryBean" />
+    </bean>
+    
+    <!-- 첫 번째 bean -> 두번째 bean -> 세번째 bean -> 네번쨰 bean 으로 전달. 결국 필요한 bean 은 sqlSessionFactoryBaen  -->
+    
+</beans>

@@ -16,7 +16,7 @@ import lombok.RequiredArgsConstructor;
 
 @RequestMapping("/ajax3")
 @RequiredArgsConstructor
-@Controller   // @ResponseBodt annotation 은 ResponseEndidt 클래스가 제공한다.
+@Controller   // @ResponseBody annotation 은 ResponseEntity 클래스가 제공한다.
 public class BoardController3 {
   
   private final BoardService boardService;
