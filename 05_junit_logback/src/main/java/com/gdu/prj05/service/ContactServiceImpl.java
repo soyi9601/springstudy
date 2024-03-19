@@ -70,7 +70,7 @@ public class ContactServiceImpl implements ContactService {
       out.println("<script>");
       if(updateCount == 1) {
         out.println("alert('수정 완료')");
-        out.println("location.href='" + request.getContextPath() + "/contact/detail.do?contactNo=" + contactNo + "'");
+        out.println("location.href='" + request.getContextPath() + "/contact/detail.do?contact-no=" + contactNo + "'");
       } else {
         out.println("alert('수정 실패')");
         out.println("history.back()");

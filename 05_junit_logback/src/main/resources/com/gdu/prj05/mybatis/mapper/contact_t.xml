@@ -81,7 +81,7 @@
   
   <select id="getContactByNo"
           resultType="ContactDto">
-    ELECT CONTACT_NO, NAME, MOBILE, EMAIL, ADDRESS, CREATED_AT
+    SELECT CONTACT_NO, NAME, MOBILE, EMAIL, ADDRESS, CREATED_AT
       FROM CONTACT_T
      WHERE CONTACT_NO = #{contactNo}
   </select>
