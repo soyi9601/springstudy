@@ -15,15 +15,19 @@ import org.springframework.web.bind.annotation.RequestParam;
 import com.gdu.prj05.service.ContactService;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @RequestMapping(value="/contact")     // /contact 으로 시작하는 모든 요청은 requestmapping
 @RequiredArgsConstructor
 @Controller
+
 public class ContactController {
 
   private final ContactService contactService;
   
-  private static final Logger log = LoggerFactory.getLogger(ContactController.class);   // ContactController 가 동작할 때 로그를 찍는 log
+  // private static final Logger log = LoggerFactory.getLogger(ContactController.class);   // ContactController 가 동작할 때 로그를 찍는 log
+  // 위의 작업을 lombok -> @Slf4j 에서 대신 해줄 수 있음
   
   @GetMapping(value="/list.do")
   public String list(HttpServletRequest request, Model model)   {
