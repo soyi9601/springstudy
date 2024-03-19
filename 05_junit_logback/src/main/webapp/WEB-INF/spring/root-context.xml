@@ -10,8 +10,8 @@
         id="hikariConfig"
         scope="singleton">  
      <!-- setter 를 이용한 것 -> property -->
-    <property name="driverClassName" value="oracle.jdbc.OracleDriver" />
-    <property name="jdbcUrl" value="jdbc:oracle:thin:@localhost:1521:xe" />
+    <property name="driverClassName" value="net.sf.log4jdbc.sql.jdbcapi.DriverSpy" />
+    <property name="jdbcUrl" value="jdbc:log4jdbc:oracle:thin:@localhost:1521:xe" />
     <property name="username" value="GD" />
     <property name="password" value="1111" />
   </bean>

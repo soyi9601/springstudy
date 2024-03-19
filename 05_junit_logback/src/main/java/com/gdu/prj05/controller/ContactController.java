@@ -3,6 +3,8 @@ package com.gdu.prj05.controller;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -21,8 +23,11 @@ public class ContactController {
 
   private final ContactService contactService;
   
+  private static final Logger log = LoggerFactory.getLogger(ContactController.class);   // ContactController 가 동작할 때 로그를 찍는 log
+  
   @GetMapping(value="/list.do")
-  public String list(Model model)   {
+  public String list(HttpServletRequest request, Model model)   {
+    log.info(request.getMethod() + "/" + request.getRequestURI());
     model.addAttribute("contactList", contactService.getContactList());
     return "contact/list";
   }
@@ -30,24 +35,29 @@ public class ContactController {
   @GetMapping(value="/detail.do")
   // contactNo 가 전달되지 않았을 때를 대비해서 requestparam 작성/ required=true 를 작성하면 값이 넘어오지 않았을 때 오류가 발생.
   // required=false 를 주고 default 값을 작성해준다.
-  public String detail(@RequestParam(value="contact-no", required=false, defaultValue="0") int contactNo
+  public String detail(HttpServletRequest request
+                      , @RequestParam(value="contact-no", required=false, defaultValue="0") int contactNo
                       , Model model) {
+    log.info(request.getMethod() + "/" + request.getRequestURI());
     model.addAttribute("contact", contactService.getContactByNo(contactNo));
     return "contact/detail";
   }
   
   @GetMapping(value="/write.do")
-  public String write() {
+  public String write(HttpServletRequest request) {
+    log.info(request.getMethod() + "/" + request.getRequestURI());
     return "contact/write";
   }
   
   @PostMapping(value="/register.do")
   public void register(HttpServletRequest request, HttpServletResponse response) {
+    log.info(request.getMethod() + "/" + request.getRequestURI());
     contactService.registerContact(request, response);
   }
   
   @GetMapping(value="/remove.do")
   public void remove(HttpServletRequest request, HttpServletResponse response) {
+    log.info(request.getMethod() + "/" + request.getRequestURI());
     contactService.removeContact(request, response);
   }
   
@@ -58,6 +68,7 @@ public class ContactController {
   
   @PostMapping(value="/modify.do")
   public void modify(HttpServletRequest request, HttpServletResponse response) {
+    log.info(request.getMethod() + "/" + request.getRequestURI());
     contactService.modifyContact(request, response);
   }
   
