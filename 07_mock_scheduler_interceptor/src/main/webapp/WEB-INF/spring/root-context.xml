@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns:p="http://www.springframework.org/schema/p"
+  xmlns:aop="http://www.springframework.org/schema/aop"
+  xmlns:tx="http://www.springframework.org/schema/tx"
+  xsi:schemaLocation="http://www.springframework.org/schema/beans https://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-4.3.xsd
+		http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.3.xsd">
+	
+	<!-- Root Context: defines shared resources visible to all other web components -->
+  <!-- Root Context : 스프링 컨테이너 -->
+		
+    <!-- namespace 에서 [p] property 를 체크 허용하면 사용 가능. 체크 해제되어있으면 못씀! -->
+    <bean class="com.zaxxer.hikari.HikariConfig"
+        id="hikariConfig"
+        scope="singleton"
+        p:driverClassName="net.sf.log4jdbc.sql.jdbcapi.DriverSpy"
+        p:jdbcUrl="jdbc:log4jdbc:oracle:thin:@localhost:1521:xe"
+        p:username="GD"
+        p:password="1111" />  
+    
+  <!-- <bean class="com.zaxxer.hikari.HikariConfig"
+        id="hikariConfig"
+        scope="singleton">  
+     setter 를 이용한 것 -> property
+    <property name="driverClassName" value="net.sf.log4jdbc.sql.jdbcapi.DriverSpy" />
+    <property name="jdbcUrl" value="jdbc:log4jdbc:oracle:thin:@localhost:1521:xe" />
+    <property name="username" value="GD" />
+    <property name="password" value="1111" />
+  </bean> -->
+  
+  <bean class="com.zaxxer.hikari.HikariDataSource"
+        id="hikariDataSource"
+        scope="singleton">
+     <!-- 생성자를 이용한 것 -> contructor-arg -->
+    <constructor-arg ref="hikariConfig" />
+  </bean>
+  
+  <!-- 
+  jsp          / servlet
+  Sqlseessoion / SqlSessionFactory
+  spring
+  SqlSessionTemplate/ SqlSessionFactory
+   -->
+   <!-- <bean class="org.mybatis.spring.SqlSessionFactoryBean"
+         id="sqlSessionFactoryBean"
+         scope="singleton">
+    setter를 이용
+    <property name="dataSource" ref="hikariDataSource" />
+    <property name="configLocation" value="com/gdu/prj07/mybatis/config/mybatis-config.xml" />   경로 작성 시 . 을 쓰면 안됨. 확장자에 .xml 이기 때문에 경로로 인식하지 못하고 파일이름인지, 패키지이름인지 구분할 수 없음
+    <property name="mapperLocations" value="com/gdu/prj07/mybatis/mapper/*.xml" />    mapper 는 여러개가 들어 있을 수 있기 때문에 *.xml (모든 .xml 파일)로 불러올 수 있다. 
+   </bean> -->
+   
+   <bean class="org.mybatis.spring.SqlSessionFactoryBean"
+        id="sqlSessionFactoryBean"
+        scope="singleton">
+    <property name="dataSource" ref="hikariDataSource"/>
+    <property name="configLocation"  value="classpath:com/gdu/prj07/mybatis/config/mybatis-config.xml"/>
+    <property name="mapperLocations" value="classpath:com/gdu/prj07/mybatis/mapper/*.xml"/>
+  </bean>
+    
+    <!-- bean 작성만 하면 오류가 뜨는데 생성자가 없어서 생기는 오류 -> 그래서 comstuctor-arg 를 이용 -->
+    <bean class="org.mybatis.spring.SqlSessionTemplate"
+        id="sqlSessionTemplate"
+        scope="singleton">
+    <constructor-arg ref="sqlSessionFactoryBean"/>
+  </bean>
+  
+  <bean class="com.gdu.prj07.service.ContactServiceImpl"
+        id="contactService"
+        scope="singleton">
+    <constructor-arg ref="contactDao" />
+  </bean>
+  
+  <bean class="com.gdu.prj07.dao.ContactDaoImpl"
+        id="contactDao"
+        scope="singleton">
+    <constructor-arg ref="sqlSessionTemplate"/>
+  </bean>
+    <!-- 첫 번째 bean -> 두번째 bean -> 세번째 bean -> 네번쨰 bean 으로 전달. 결국 필요한 bean 은 sqlSessionFactoryBaen
+          이였으나.. 서버가 돌아가지 않아서 ContactDaoImpl 을 결국 추가했었음: bean 이 없다고 판단되어 돌아가지 않았었음  -->
+  
+  <!-- 트랜잭션 관리자 등록 -->
+  <bean class="org.springframework.jdbc.datasource.DataSourceTransactionManager"
+        id="dataSourceTransactionManager"
+        scope="singleton">
+    <property name="dataSource" ref="hikariDataSource" />
+  </bean>
+  
+  <!-- 트랜잭션 Advice 등록 -->
+  <tx:advice transaction-manager="dataSourceTransactionManager" id="txAdvice">
+    <tx:attributes>
+      <tx:method name="*"/>
+      <tx:method name="get*" read-only="true"/>
+      <!-- 내용의 변화가 없는 메소드. 
+      DB가 변하지 않는 메소드 -> 트랜잭션이 일어나지 않는 메소드.
+      read-only 를 쓰는 이유는 굳이 트랜잭션을 개입시킬 필요가 없으니 성능이 좋아지라고 적는 것. 안넣는다고해서 동작을 안하는 것은 아님 -->
+    </tx:attributes>
+  </tx:advice>
+  
+  <!-- Aspect 설정 -->
+  <aop:config>
+    <aop:pointcut expression="execution (* com.gdu.prj07.service.*Impl.*(..))" 
+                  id="txPointCut"/>
+    <aop:advisor advice-ref="txAdvice"
+                 pointcut-ref="txPointCut"/>
+  </aop:config>
+  
+  <!-- AspectJ 허용 (@EnableAspectJAutoProxy) -->
+  <aop:aspectj-autoproxy />
+    
+</beans>
