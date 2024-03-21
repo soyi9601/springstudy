@@ -73,6 +73,12 @@
     <constructor-arg ref="contactDao" />
   </bean>
   
+  <bean class="com.gdu.prj07.controller.ContactController"
+        id="ContactController"
+        scope="singleton">
+    <constructor-arg ref="contactService" />
+  </bean>
+  
   <bean class="com.gdu.prj07.dao.ContactDaoImpl"
         id="contactDao"
         scope="singleton">

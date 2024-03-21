@@ -6,8 +6,6 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.springframework.stereotype.Service;
-
 import com.gdu.prj07.dao.ContactDao;
 import com.gdu.prj07.dto.ContactDto;
 
@@ -29,8 +27,9 @@ public class ContactServiceImpl implements ContactService {
                           .build();
     // 등록
     int insertCount = contactDao.registerContact(contact);
+    
     // 등록 결과에 따른 응답
-    // 생성과정부터 예외가 있을 수 있음. ex) name 은 notnull 인데 입력하지 않으면 예외가 발생하므로 try 안에 넣고 예외처리를 다르게 해줘야함.
+    // 생성과정부터 예외가 있을 수 있음. ex) name 은 not null 인데 입력하지 않으면 예외가 발생하므로 try 안에 넣고 예외처리를 다르게 해줘야함.
     response.setContentType("text/html; charset=UTF-8");
     try {
       PrintWriter out = response.getWriter();
