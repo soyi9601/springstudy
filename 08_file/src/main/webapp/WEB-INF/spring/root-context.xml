@@ -43,20 +43,12 @@
         scope="singleton">
     <constructor-arg ref="sqlSessionFactoryBean"/>
   </bean>
-  
-  <bean class="com.gdu.prj08.service.UploadServiceImpl"
-        id="uploadService"
+    
+  <bean class="com.gdu.prj08.dao.FileDaoImpl"
+        id="FileDao"
         scope="singleton">
-    <constructor-arg ref="fileDao" />
+    <constructor-arg ref="sqlSessionTemplate"/>
   </bean>
-  
-  <bean class="com.gdu.prj08.controller.UploadController"
-        id="uploadController"
-        scope="singleton">
-    <constructor-arg ref="uploadService" />
-  </bean>
-  
-  
   
 		
 </beans>

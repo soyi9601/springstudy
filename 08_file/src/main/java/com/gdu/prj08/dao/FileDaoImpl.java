@@ -1,19 +1,25 @@
 package com.gdu.prj08.dao;
 
+import org.mybatis.spring.SqlSessionTemplate;
+
 import com.gdu.prj08.dto.FileDto;
 import com.gdu.prj08.dto.HistoryDto;
 
+import lombok.RequiredArgsConstructor;
+
+@RequiredArgsConstructor
 public class FileDaoImpl implements FileDao {
 
+  private final SqlSessionTemplate sqlSessionTemplate;
+  
   @Override
-  public int uploadFile1(FileDto fileDto) {
-    
-    return 0;
+  public int insertHistory(HistoryDto history) {
+    return sqlSessionTemplate.insert("com.gdu.prj.mybatis.mapper.file_t.insertHistory", history);
   }
   
   @Override
-  public int uploadFile2(HistoryDto historyDto) {
-    return 0;
+  public int insertFile(FileDto file) {
+    return sqlSessionTemplate.insert("com.gdu.prj.mybatis.mapper.file_t.insertFile", file);
   }
 
 }
