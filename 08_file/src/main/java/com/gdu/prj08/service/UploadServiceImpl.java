@@ -16,36 +16,35 @@ import com.gdu.prj08.utils.MyFileUtils;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
+@Service
 public class UploadServiceImpl implements UploadService {
-  
+
   private final MyFileUtils myFileUtils;
-  private final FileDao fileDao;  
+  private final FileDao fileDao;
   
   @Override
   public int upload1(MultipartHttpServletRequest multipartRequest) {
-    
- // 작성자와 IP
+
+    // 작성자와 IP
     String writer = multipartRequest.getParameter("writer");
     String ip = multipartRequest.getRemoteAddr();
-    
+
+    // HistoryDto 생성
     HistoryDto history = HistoryDto.builder()
-                            .writer(writer)
-                            .ip(ip)
-                          .build();
+                              .writer(writer)
+                              .ip(ip)
+                            .build();
     
-    System.out.println("삽입 전" + history);
-    
+    // HistoryDto -> HISTORY_T 삽입
     fileDao.insertHistory(history);
-    
-    System.out.println("삽입 후" + history);
-    
+
     // 첨부 파일 목록
     List<MultipartFile> files = multipartRequest.getFiles("files");
     
     // 첨부 파일 목록 순회
     for(MultipartFile multipartFile : files) {
       
-      // 첨부 파일 존재 여부 확인     
+      // 첨부 파일 존재 여부 확인
       if(multipartFile != null && !multipartFile.isEmpty()) {
         
         // 첨부 파일 경로
@@ -54,10 +53,10 @@ public class UploadServiceImpl implements UploadService {
         // 첨부 파일 경로 디렉터리 만들기
         File dir = new File(uploadPath);
         if(!dir.exists()) {
-          dir.mkdirs();   // 하위 구조 여러개 생길 수 있기 때문에 mkdir's' !!
+          dir.mkdirs();
         }
         
-        // 첨부 파일 이름
+        // 첨부 파일 원래 이름
         String originalFilename = multipartFile.getOriginalFilename();
         
         // 첨부 파일 저장 이름
@@ -67,30 +66,35 @@ public class UploadServiceImpl implements UploadService {
         File file = new File(dir, filesystemName);
         
         // 저장
-        try {
-          multipartFile.transferTo(file);   // file 을 보내라          
+        try {          
+          multipartFile.transferTo(file);
         } catch (Exception e) {
           e.printStackTrace();
-        }      
+        }
         
+        // FileDto 생성
         FileDto fileDto = FileDto.builder()
-                            .uploadPath(uploadPath)
-                            .originalName(originalFilename)
-                            .filesystemName(filesystemName)
-                            .historyNo(history.getHistoryNo())
-                          .build();
+                              .uploadPath(uploadPath)
+                              .originalFilename(originalFilename)
+                              .filesystemName(filesystemName)
+                              .historyNo(history.getHistoryNo())
+                            .build();
         
         // FileDto -> FILE_T
         fileDao.insertFile(fileDto);
-      }      
-    }    
+        
+      }
+      
+    }
+    
     return 1;
+    
   }
 
   @Override
   public Map<String, Object> upload2(MultipartHttpServletRequest multipartRequest) {
     
- // 첨부 파일 목록
+    // 첨부 파일 목록
     List<MultipartFile> files = multipartRequest.getFiles("files");
     
     // 첨부 파일 목록 순회
@@ -129,6 +133,7 @@ public class UploadServiceImpl implements UploadService {
     }
     
     return Map.of("success", 1);
-  
+    
   }
+  
 }

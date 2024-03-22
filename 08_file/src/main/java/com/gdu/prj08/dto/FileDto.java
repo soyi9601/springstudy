@@ -10,11 +10,9 @@ import lombok.NoArgsConstructor;
 @Data
 @Builder
 public class FileDto {
-
   private int fileNo;
   private String uploadPath;
-  private String originalName;
+  private String originalFilename;
   private String filesystemName;
   private int historyNo;
-  
 }

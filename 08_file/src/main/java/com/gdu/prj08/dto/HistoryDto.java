@@ -10,8 +10,7 @@ import lombok.NoArgsConstructor;
 @Data
 @Builder
 public class HistoryDto {
-
   private int historyNo;
   private String writer;
-  private String ip;  
+  private String ip;
 }
