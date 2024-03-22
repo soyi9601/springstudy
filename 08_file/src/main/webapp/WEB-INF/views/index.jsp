@@ -35,7 +35,13 @@
   <hr>
   
   <div>
-  
+    <input type="file" id="input-files" class="files" multiple>
+  </div>
+  <div>
+    <input type="text" id="input-writer" placeholder="작성자">
+  </div>
+  <div>
+    <button type="button" id="btn-upload">전송</button>
   </div>
   
   <script type="text/javascript">
@@ -77,8 +83,31 @@
     	}
     }
     
+    // 비동기처리
+    const fnAsyncUpload = ()=>{
+    	const inputFiles = document.getElementById('input-files');
+    	const inputWriter = document.getElementById('input-writer');
+    	let formData = new FormData();
+    	for(let i = 0; i < inputFiles.files.length; i++) {
+    		formData.append('files', inputFiles.files[i]);
+    	}
+    	formData.append('writer', inputWriter);
+    	fetch('${contextPath}/upload2.do', {
+    		method: 'POST',
+    		body: formData,
+    	}).then(response=>response.json())
+    	  .then(resData=>{     /* resData = {"success": 1}성공 또는 {"success: 0"}실패 */
+    		  if(resData.success === 1) {
+    			  alert('저장 성공');
+    		  } else {
+    			  alert('저장 실패');
+    		  }
+    	  })
+    }
+    
     fnFileCheck();
     fnAfterInsertCheck();
+    document.getElementById('btn-upload').addEventListener('click', fnAsyncUpload);
     
   </script>
   
