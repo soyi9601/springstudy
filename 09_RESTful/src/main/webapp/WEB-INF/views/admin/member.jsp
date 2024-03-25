@@ -136,7 +136,7 @@
     var btnModify = $('#btn-modify');
     var btnRemove = $('#btn-remove');
     
-    // 함수 표현식 (함수 만들기)
+    // 함수 표현식 (함수 만들기) -> 입력창 초기화
     const fnInit = ()=>{
     	email.val('');
     	mName.val('');
@@ -165,10 +165,13 @@
     		}),  
     		// 응답
     		dataType: 'json'  // 응답 데이터 타입
-    	}).done(resData=>{  // resData = {"insertCount": 1} 
-    		console.log(resData);
+    	}).done(resData=>{  // resData = {"insertCount": 2} 
+    		if(resData.insertCount === 2) {
+    			alert('정상적으로 등록');
+    			fnInit();
+    		}
     	}).fail(jqXHR=>{    // jqXHR = {"insertCount": 0}  
-    		console.log(jqXHR);
+    		alert(jqXHR.responseText);
     	})
     }
     

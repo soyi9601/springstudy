@@ -6,17 +6,43 @@
   
   <insert id="insertMember"
           parameterType="MemberDto">
+    <selectKey keyProperty="memberNo" order="BEFORE" resultType="int">
+      SELECT MEMBER_SEQ.NEXTVAL
+        FROM DUAL
+    </selectKey>
     INSERT INTO MEMBER_T(
         MEMBER_NO
       , EMAIL
       , NAME
       , GENDER
     ) VALUES(
-        MEMBER_SEQ.NEXTVAL
+        #{memberNo}   <!-- keyProperty -->
       , #{email}
       , #{name}
       , #{gender}
     )
+  </insert>
+  
+  <insert id="insertAddress"
+          parameterType="AddressDto">
+    INSERT INTO ADDRESS_T (
+        ADDRESS_NO
+      , ZONECODE
+      , ADDRESS
+      , DETAIL_ADDRESS
+      , EXTRA_ADDRESS
+      , MEMBER_NO
+    ) VALUES(
+        ADDRESS_SEQ.NEXTVAL
+      , #{zonecode}
+      , #{address}
+      , #{detailAddress}
+      , #{extraAddress}
+      , #{member.memberNo}
+    )
+    <!-- 위의 #{} 변수들은 addressDto의 setter를 불러오는 것으로,
+    memberNo는 없고 memberDto 타입의 member만 있음
+    member 타입(setMember)의 memberNo 를 불러와야함.  -->
   </insert>
   
 </mapper>
