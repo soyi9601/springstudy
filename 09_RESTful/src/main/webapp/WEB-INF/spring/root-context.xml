@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans https://www.springframework.org/schema/beans/spring-beans.xsd">
+	
+	<bean class="com.zaxxer.hikari.HikariConfig"
+        id="hikariConfig"
+        scope="singleton">
+    <property name="driverClassName" value="net.sf.log4jdbc.sql.jdbcapi.DriverSpy"/>
+    <property name="jdbcUrl" value="jdbc:log4jdbc:oracle:thin:@localhost:1521:xe"/>
+    <property name="username" value="GD"/>
+    <property name="password" value="1111"/>
+  </bean>
+  
+  <bean class="com.zaxxer.hikari.HikariDataSource"
+        id="hikariDataSource"
+        scope="singleton">
+    <constructor-arg ref="hikariConfig"/>
+  </bean>
+  
+  <bean class="org.mybatis.spring.SqlSessionFactoryBean"
+        id="sqlSessionFactoryBean"
+        scope="singleton">
+    <property name="dataSource" ref="hikariDataSource"/>
+    <property name="configLocation"  value="classpath:com/gdu/prj09/mybatis/config/mybatis-config.xml"/>
+    <property name="mapperLocations" value="classpath:com/gdu/prj09/mybatis/mapper/*.xml"/>
+  </bean>
+  
+  <bean class="org.mybatis.spring.SqlSessionTemplate"
+        id="sqlSessionTemplate"
+        scope="singleton">
+    <constructor-arg ref="sqlSessionFactoryBean"/>
+  </bean>
+  
+  <!-- 생성자 주입을 해야하고 생성자의 필드값으로 sqlsessiontemplete 이 들어가있어야한다. -->
+  <bean class="com.gdu.prj09.dao.MemberDaoImpl"
+        id="memberDao"
+        scope="singleton">
+    <constructor-arg ref="sqlSessionTemplate"/>
+  </bean>
+  
+  <bean class="com.gdu.prj09.utils.MyPageUtils"
+        id="myPageUtils"
+        scope="singleton" />
+  <!-- setter 가 없어서 불러올 게 없음. 하남 불러온다면 pagePerBlock 을 불러올 수 있지만 불러올 필요 없음. -->
+		
+  <bean class="com.gdu.prj09.service.MemberServiceImpl"
+        id="memberService"
+        scope="singleton">
+    <constructor-arg ref="memberDao" />   <!-- service에서 먼저 final 선언한 것부터 추가해주면 됨. 생성자를 넣지 않으려면 @noArgus 를 넣었다면 생성자를 추가해주지 않아도 되지만 그럴 수 없음 -->
+    <constructor-arg ref="myPageUtils" />
+  </bean>
+</beans>
