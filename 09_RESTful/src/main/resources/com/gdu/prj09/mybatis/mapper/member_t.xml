@@ -89,6 +89,30 @@
      WHERE RN BETWEEN #{begin} AND #{end}
   </select>
   
+  <select id="getMemberByNo"
+          resultType="MemberDto">
+    SELECT MEMBER_NO, EMAIL, NAME, GENDER
+      FROM MEMBER_T
+     WHERE MEMBER_NO = #{memberNo}
+     <!-- MEMBER_T 에서 MEMBER_NO 는 pk 라서 한개만 반환한다. -->
+  </select>
   
+  <select id="getTotalAddressCountByNo"
+          resultType="int">
+    SELECT COUNT(*)
+      FROM ADDRESS_T
+     WHERE MEMBER_NO = #{memberNo}
+  </select>
+  
+  <select id="getAddressListByNo"
+          parameterType="Map"
+          resultType="AddressDto">
+    SELECT ADDRESS_NO, ZONECODE, ADDRESS, DETAIL_ADDRESS, EXTRA_ADDRESS
+      FROM (SELECT ROW_NUMBER() OVER(ORDER BY ADDRESS_NO ASC) AS RN, ADDRESS_NO, ZONECODE, ADDRESS, DETAIL_ADDRESS, EXTRA_ADDRESS
+              FROM ADDRESS_T
+             WHERE MEMBER_NO = #{memberNo})
+     WHERE RN BETWEEN #{begin} AND #{end}
+     <!-- address_t 에서 member_no 는 fk 라서 여러개를 반환한다. -->
+  </select>
   
 </mapper>

@@ -3,9 +3,12 @@
  */
 
 // jQuery 객체 선언
+var members = $('#members');
+var total = $('#total');
+var paging = $('#paging');
+var jqDisplay = $('#display');
 var email = $('#email');
 var mName = $('#name');
-// var gender = $('input[type=radio][name=gender]')
 var zonecode = $('#zonecode');
 var address = $('#address');
 var detailAddress = $('#detailAddress');
@@ -14,6 +17,8 @@ var btnInit = $('#btn-init');
 var btnRegister = $('#btn-register');
 var btnModify = $('#btn-modify');
 var btnRemove = $('#btn-remove');
+var btnSelectRemove = $('#btn-select-remove');
+
 
 // 함수 표현식 (함수 만들기) -> 입력창 초기화
 const fnInit = ()=>{
@@ -67,4 +72,50 @@ fnInit();
 btnInit.on('click', fnInit);
 btnRegister.on('click', fnRegisterMember);
 
+
+/* 두번째 script */
+
+// 전역 변수
+var page = 1;
+var display = 20;
+
+//함수 표현식 (함수 만들기)
+const fnMemberList = ()=>{
+  $.ajax({
+    type: 'GET',
+    url: getContextPath() + '/members/page/' + page + '/display/' + display,
+    dataType: 'json',
+    success: (resData)=>{   // resData = {"members" : [{}, {}, {}], "total" : 30}
+      total.html('총 회원 ' + resData.total + '명');
+      members.empty();
+      $.each(resData.members, (i, member)=>{
+        let str = '<tr>';
+        str += '<td><input type="checkbox" class="chk_member" value="' + member.member.memberNo + '">' +'</td>';
+        str += '<td>'+ member.member.email +'</td>';
+        str += '<td>'+ member.member.name +'</td>';
+        str += '<td>'+ member.member.gender +'</td>';
+        str += '<td><button type="button" class="btn-detail" data-member-no="' + member.member.memberNo +'">조회</button></td>';
+        str += '</tr>';
+        members.append(str);
+      })
+      paging.html(resData.paging);
+    },
+    error: (jqXHR)=>{
+      alert(jqXHR.statusText + '(' + jqXHR.status + ')');
+    }
+  })  
+}
+
+const fnChangeDisplay = ()=>{
+  jqdisplay.val();
+  fnMemberList();
+}
+
+const fnPaging = (p)=>{
+  page = p;
+  fnMemberList();
+}
+
+// 함수 호출 및 이벤트
+fnMemberList();
 

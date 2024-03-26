@@ -98,7 +98,21 @@
     
     <hr>
     
+    <!-- 
+    상세보기
+    목록 : 1
+    detailList : M
+    -->
+    
     <div>
+      <div id="total"></div>
+      <div>
+        <select id="display">
+          <option>20</option>
+          <option>50</option>
+          <option>100</option>
+        </select>
+      </div>
       <table border="1">
         <thead>
           <tr>
@@ -116,35 +130,57 @@
           </tr>
         </tfoot>
       </table>
+      <button type="button" id="btn-select-remove">선택삭제</button>
     </div>
         
   </div>  
   
   <script src="${contextPath}/resources/js/member.js"></script>
   <script>
+  // jquery 객체 선언
+  var btnDetail = $('.btn-detail');
   
-  // 전역 변수
-  var page = 1;
-  var display = 20;
-  
-  //함수 표현식 (함수 만들기)
-  const fnMemberList = ()=>{
-    $.ajax({
-      type: 'GET',
-      url: getContextPath() + '/members/page/' + page + '/display/' + display,
-      dataType: 'json',
-      success: (resData)=>{
-        console.log(resData);
-      },
-      error: (jqXHR)=>{
-        alert(jqXHR.statusText + '(' + jqXHR.status + ')');
-      }
-    })
+  // 함수 표햔식 (함수 만들기)
+  const getMemberByNo = (evt)=>{
+	  $.ajax({
+		  type: 'GET',
+		  url: getContextPath() + '/members/' + evt.target.dataset.memberNo,
+		  dataType: 'json'
+	  }).done(resData=>{   
+		  /* resData = {
+			  "addressList": [
+				  {
+					  "addressNo": 1,
+					  "zonecode": "1234",
+					  "address": "ddd",
+					  "detailAddress": "ddd",
+					  "extraAddress": "(ddd)"
+				  },
+				  ...
+			  ],
+			  "member": {
+				  "memberNo":1,
+				  "email": eee,
+					"name": "nnn",
+					"gender": "man"
+			  }
+	  } */
+		  email.val(resData.member.email);
+		  mName.val(resData.member.name);
+		  $(':radio[value=' + resData.member.gender + ']').prop('checked', true);
+	    zonecode.val(resData.addressList[0].zonecode);
+	    address.val(resData.addressList[0].address);
+	    detailAddress.val(resData.addressList[0].detailAddress);
+	    extraAddress.val(resData.addressList[0].extraAddress);
+	  }).fail(jqXHR=>{
+		  alert(jqXHR.statusText + '(' + jqXHR.status + ')');
+	  })
   }
   
   // 함수 호출 및 이벤트
-  fnMemberList();
-    
+  $(document).on('click', '.btn-detail', (evt)=>{
+	  getMemberByNo(evt);
+  })
   </script>
   
 </body>

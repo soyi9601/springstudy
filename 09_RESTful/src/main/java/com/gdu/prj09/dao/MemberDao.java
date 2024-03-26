@@ -15,6 +15,9 @@ public interface MemberDao {
   int deleteMembers(List<String> memberNoList);   // String 타입의 List인 memberNoList
   int getTotalMemberCount();    // 페이징 처리
   List<AddressDto> getMemberList(Map<String, Object> map);  // 목록 보기 + resultMap (궁극적으로 AddressDto) 으로 바꿨음
-  AddressDto getMemberByNo(int memberNo);    // 상세 반환 + resultMap (궁극적으로 AddressDto) 으로 바꿨음. (주소정보가 MemberDto 에는 없기 때문에 조회할 수 없음)
+  MemberDto getMemberByNo(int memberNo);    
+  int getTotalAddressCountByNo(int memberNo);
+  List<AddressDto> getAddressListByNo(Map<String, Object> map);
+  // Member 는 한개 가져오고, AddressDto 에서는 정보 여러개 가져옴
   
 }
