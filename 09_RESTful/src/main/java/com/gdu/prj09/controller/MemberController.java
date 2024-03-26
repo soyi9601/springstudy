@@ -1,12 +1,14 @@
 package com.gdu.prj09.controller;
 
 import java.util.Map;
+import java.util.Optional;
 
 import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
@@ -54,6 +56,14 @@ public class MemberController {
     return memberService.registerMember(map, response);
   }
   
+  @GetMapping(value="/members/page/{p}/display/{dp}", produces="application/json")
+  // Optional : Null 일 수 있는 애들을 싸서 한번 불러봐서 확인해보는 것. value="p"가 필수는 아니다. 안올 수도 있다.
+  public ResponseEntity<Map<String, Object>> getMembers(@PathVariable(value="p", required=false) Optional<String> optPage
+                                                      , @PathVariable(value="dp", required=false) Optional<String> optDisplay) {
+    int page = Integer.parseInt(optPage.orElse("1"));  // Null 이면 1을 꺼내서 쓴다. Null 이 아니면 꺼내서 해당 값을 쓰면 됨
+    int display = Integer.parseInt(optDisplay.orElse("20"));
+    return memberService.getMembers(page, display);
+  }
   
   
   

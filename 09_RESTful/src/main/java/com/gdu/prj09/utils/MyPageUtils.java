@@ -1,5 +1,8 @@
 package com.gdu.prj09.utils;
 
+import lombok.Data;
+
+@Data
 public class MyPageUtils {
   private int total;    // 멤버의개수 : db
   private int display;  // 파라미터로 처리 -> 전달이 안되면 기본 20개

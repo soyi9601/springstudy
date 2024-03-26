@@ -1,6 +1,7 @@
 package com.gdu.prj09.service;
 
 import java.io.PrintWriter;
+import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletResponse;
@@ -24,7 +25,19 @@ public class MemberServiceImpl implements MemberService {
   
   @Override
   public ResponseEntity<Map<String, Object>> getMembers(int page, int display) {
-    return null;
+    
+    int total = memberDao.getTotalMemberCount();
+    
+    myPageUtils.setPaging(total, display, page);
+    
+    Map<String, Object> params = Map.of("begin", myPageUtils.getBegin()
+                                        , "end", myPageUtils.getEnd());    
+    // member_t.xml 안에 select #{begin}, #{end} 와 이름이 같아야함. myPageUtils 에 @data 를 추가해서 getBigin, getEnd 가 생성됐을것.
+    
+    List<AddressDto> members = memberDao.getMemberList(params);
+    
+    return new ResponseEntity<Map<String,Object>>(Map.of("members", members, "total", total)
+                                                , HttpStatus.OK);
   }
 
   @Override

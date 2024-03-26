@@ -4,6 +4,20 @@
   "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.gdu.prj09.mybatis.mapper.member_t">
   
+  <resultMap type="AddressDto" id="AddressMap">
+    <id     column="ADDRESS_NO"     property="addressNo"/>    <!-- PK 여야함 -->
+    <result column="ZONECODE"       property="zonecode"/>
+    <result column="ADDRESS"        property="address"/>
+    <result column="DETAIL_ADDRESS" property="detailAddress"/>
+    <result column="EXTRA_ADDRESS"  property="extraAddress"/>
+    <association javaType="MemberDto" property="member">
+      <id     column="MEMBER_NO" property="memberNo" />
+      <result column="EMAIL"     property="email"/>
+      <result column="NAME"      property="name"/>
+      <result column="GENDER"    property="gender"/>
+    </association>
+  </resultMap>
+  
   <insert id="insertMember"
           parameterType="MemberDto">
     <selectKey keyProperty="memberNo" order="BEFORE" resultType="int">
@@ -44,5 +58,37 @@
     memberNo는 없고 memberDto 타입의 member만 있음
     member 타입(setMember)의 memberNo 를 불러와야함.  -->
   </insert>
+  
+  <select id="getTotalMemberCount"
+          resultType="int">   <!-- daoImpl 에서 전달되는 파라미터가 없기 때문에 반환타입만 전달해주면 됨 -->
+    SELECT COUNT(*)
+      FROM MEMBER_T
+  </select>
+  
+  <select id="getMemberList"
+          parameterType="Map"
+          resultMap="AddressMap">
+  <!-- resultType 은 MemberDto로 만들면 안됨. 
+  아래의 select 결과들이 MemberDto 에 저장이 될건데 RN + Address_T 의 칼럼들(address_no, zonecode 등등)은 MemberDto 에 저장될 수 없음
+   member 내용은 AddressDto 안에 있는 MemberDto > member에 저장될 수 있도록 해줘야함. (상단에 있는 ResultMap 활용) -->
+          
+    <!-- SELECT RN, MEMBER_NO, EMAIL, NAME, GENDER, ADDRESS_NO, ZONECODE, ADDRESS, DETAIL_ADDRESS, EXTRA_ADDRESS
+      FROM (SELECT ROW_NUMBER() OVER(ORDER BY M.MEMBER_NO DESC) AS RN
+                 , M.MEMBER_NO, M.EMAIL, M.NAME, M.GENDER
+                 , A.ADDRESS_NO, A.ZONECODE, ADDRESS, A.DETAIL_ADDRESS, A.EXTRA_ADDRESS     
+              FROM MEMBER_T M INNER JOIN ADDRESS_T A
+                ON M.MEMBER_NO = A.MEMBER_NO)
+     WHERE RN BETWEEN #{begin} AND #{end} -->
+     
+    SELECT MEMBER_NO, EMAIL, NAME, GENDER, ADDRESS_NO, ZONECODE, ADDRESS, DETAIL_ADDRESS, EXTRA_ADDRESS
+      FROM (SELECT ROW_NUMBER() OVER(ORDER BY M.MEMBER_NO DESC) AS RN
+                 , M.MEMBER_NO, M.EMAIL, M.NAME, M.GENDER
+                 , A.ADDRESS_NO, A.ZONECODE, ADDRESS, A.DETAIL_ADDRESS, A.EXTRA_ADDRESS     
+              FROM MEMBER_T M INNER JOIN ADDRESS_T A
+                ON M.MEMBER_NO = A.MEMBER_NO)
+     WHERE RN BETWEEN #{begin} AND #{end}
+  </select>
+  
+  
   
 </mapper>
