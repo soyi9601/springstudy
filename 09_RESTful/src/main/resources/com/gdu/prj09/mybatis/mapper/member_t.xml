@@ -59,6 +59,41 @@
     member 타입(setMember)의 memberNo 를 불러와야함.  -->
   </insert>
   
+  <update id="updateMember"
+          parameterType="Map">
+    UPDATE MEMBER_T
+       SET NAME = #{name}
+         , GENDER = #{gender}
+     WHERE MEMBER_NO = #{memberNo}
+  </update>
+  
+  <update id="updateAddress"
+          parameterType="Map">
+    UPDATE ADDRESS_T
+       SET ZONECODE = #{zonecode}
+         , ADDRESS = #{address}
+         , DETAIL_ADDRESS = #{detailAddress}
+         , EXTRA_ADDRESS = #{extraAddress}
+     WHERE MEMBER_NO = #{memberNo}
+     <!-- Address 의 정보가 1:다 인 경우
+      where member_no = #{addressNo} 로 바꿔야함 -->
+  </update>
+  
+  <delete id="deleteMember">
+    DELETE
+      FROM MEMBER_T
+     WHERE MEMBER_NO = #{memberNo}
+  </delete>
+  
+  <delete id="deleteMembers">
+    DELETE
+      FROM MEMBER_T
+     WHERE MEMBER_NO
+    <foreach collection="list" item="memberNo" open="IN(" separator="," close=")">
+      #{memberNo}
+    </foreach>
+  </delete>
+  
   <select id="getTotalMemberCount"
           resultType="int">   <!-- daoImpl 에서 전달되는 파라미터가 없기 때문에 반환타입만 전달해주면 됨 -->
     SELECT COUNT(*)
@@ -80,11 +115,19 @@
                 ON M.MEMBER_NO = A.MEMBER_NO)
      WHERE RN BETWEEN #{begin} AND #{end} -->
      
-    SELECT MEMBER_NO, EMAIL, NAME, GENDER, ADDRESS_NO, ZONECODE, ADDRESS, DETAIL_ADDRESS, EXTRA_ADDRESS
+    <!-- SELECT MEMBER_NO, EMAIL, NAME, GENDER, ADDRESS_NO, ZONECODE, ADDRESS, DETAIL_ADDRESS, EXTRA_ADDRESS
       FROM (SELECT ROW_NUMBER() OVER(ORDER BY M.MEMBER_NO DESC) AS RN
                  , M.MEMBER_NO, M.EMAIL, M.NAME, M.GENDER
                  , A.ADDRESS_NO, A.ZONECODE, ADDRESS, A.DETAIL_ADDRESS, A.EXTRA_ADDRESS     
               FROM MEMBER_T M INNER JOIN ADDRESS_T A
+                ON M.MEMBER_NO = A.MEMBER_NO)
+     WHERE RN BETWEEN #{begin} AND #{end} -->
+     
+     SELECT MEMBER_NO, EMAIL, NAME, GENDER, ADDRESS_NO, ZONECODE, ADDRESS, DETAIL_ADDRESS, EXTRA_ADDRESS
+      FROM (SELECT ROW_NUMBER() OVER(ORDER BY M.MEMBER_NO DESC) AS RN
+                 , M.MEMBER_NO, M.EMAIL, M.NAME, M.GENDER
+                 , A.ADDRESS_NO, A.ZONECODE, A.ADDRESS, A.DETAIL_ADDRESS, A.EXTRA_ADDRESS
+              FROM MEMBER_T M LEFT JOIN ADDRESS_T A
                 ON M.MEMBER_NO = A.MEMBER_NO)
      WHERE RN BETWEEN #{begin} AND #{end}
   </select>

@@ -1,121 +1,210 @@
 /**
  * 
  */
+ 
+/*************************************************
+ * 파일명 : member.js
+ * 설  명 : 회원 관리 JavaScript
+ * 수정일      수정자  Version   Function 명
+ * -------------------------------------------
+ * 2024.03.25  민경태  1.0       fnInit
+ * 2024.03.25  민경태  1.1       fnRegisterMember
+ * 2023.03.26  민경태  1.2       fnGetContextPath
+ *************************************************/
 
-// jQuery 객체 선언
-var members = $('#members');
-var total = $('#total');
-var paging = $('#paging');
+// 전역변수 (vXXX)
+var vPage = 1;
+var vDisplay = 20;
+
+// jQuery 객체 선언 (jqXXX)
+var jqMembers = $('#members');
+var jqTotal = $('#total');
+var jqPaging = $('#paging');
 var jqDisplay = $('#display');
-var email = $('#email');
-var mName = $('#name');
-var zonecode = $('#zonecode');
-var address = $('#address');
-var detailAddress = $('#detailAddress');
-var extraAddress = $('#extraAddress');
-var btnInit = $('#btn-init');
-var btnRegister = $('#btn-register');
-var btnModify = $('#btn-modify');
-var btnRemove = $('#btn-remove');
-var btnSelectRemove = $('#btn-select-remove');
+var jqMemberNo = $('#member-no');
+var jqEmail = $('#email');
+var jqName = $('#name');
+var jqZonecode = $('#zonecode');
+var jqAddress = $('#address');
+var jqDetailAddress = $('#detailAddress');
+var jqExtraAddress = $('#extraAddress');
+var jqBtnInit = $('#btn-init');
+var jqBtnRegister = $('#btn-register');
+var jqBtnModify = $('#btn-modify');
+var jqBtnRemove = $('#btn-remove');
+var jqBtnSelectRemove = $('#btn-select-remove');
 
-
-// 함수 표현식 (함수 만들기) -> 입력창 초기화
+/*************************************************
+ * 함수명 : fnInit
+ * 설  명 : 입력란에 입력된 데이터를 모두 초기화
+ * 인  자 : 없음
+ * 사용법 : fnInit()
+ * 작성일 : 2024.03.26
+ * 작성자 : 이런저런 개발팀 민경태
+ * 수정일     수정자  수정내용
+ * --------------------------------
+ * 2024.03.25 민경태  입력란 초기화
+ *************************************************/
 const fnInit = ()=>{
-  email.val('');
-  mName.val('');
+  jqEmail.val('').prop('disabled', false);
+  jqName.val('');
   $('#none').prop('checked', true);
-  // $('#none').attr('checked', 'checked');
-  zonecode.val('');
-  address.val('');
-  detailAddress.val('');
-  extraAddress.val('');
+  jqZonecode.val('');
+  jqAddress.val('');
+  jqDetailAddress.val('');
+  jqExtraAddress.val('');
+  jqBtnRegister.prop('disabled', false);
+  jqBtnModify.prop('disabled', true);
+  jqBtnRemove.prop('disabled', true);
+    
 }
 
-const getContextPath = ()=>{
-  const host = location.host; /* localhost:8080 */
-  const url = location.href   /* http://localhost:8080/mvc/getDate.do */
+const fnGetContextPath = ()=>{
+  const host = location.host;  /* localhost:8080 */
+  const url = location.href;   /* http://localhost:8080/mvc/getDate.do */
   const begin = url.indexOf(host) + host.length;
   const end = url.indexOf('/', begin + 1);
   return url.substring(begin, end);
 }
- 
+
 const fnRegisterMember = ()=>{
   $.ajax({
     // 요청
     type: 'POST',
-    url: getContextPath() + '/members',
+    url: fnGetContextPath() + '/members',
     contentType: 'application/json',  // 보내는 데이터의 타입
-    data: JSON.stringify({    // 서버로 데이터를 보낼 때 : JSON.stringify(JS 객체) : 문자열 형식의 JSON 데이터
-      'email': email.val(),
-      'name': mName.val(),
+    data: JSON.stringify({            // 보내는 데이터 (문자열 형식의 JSON 데이터)
+      'email': jqEmail.val(),
+      'name': jqName.val(),
       'gender': $(':radio:checked').val(),
-      'zonecode': zonecode.val(),
-      'address': address.val(),
-      'detailAddress': detailAddress.val(),
-      'extraAddress': extraAddress.val()
-    }),  
+      'zonecode': jqZonecode.val(),
+      'address': jqAddress.val(),
+      'detailAddress': jqDetailAddress.val(),
+      'extraAddress': jqExtraAddress.val()
+    }),
     // 응답
-    dataType: 'json'  // 응답 데이터 타입
-  }).done(resData=>{  // resData = {"insertCount": 2} 
-    if(resData.insertCount === 2) {
-      alert('정상적으로 등록');
+    dataType: 'json'  // 받는 데이터 타입
+  }).done(resData=>{  // resData = {"insertCount": 2}
+    if(resData.insertCount === 2){
+      alert('정상적으로 등록되었습니다.');
       fnInit();
+      fnGetMemberList();
     }
-  }).fail(jqXHR=>{    // jqXHR = {"insertCount": 0}  
+  }).fail(jqXHR=>{
     alert(jqXHR.responseText);
+  })
+}
+
+// member 리스트 보여주는 함수 실행
+const fnGetMemberList = ()=>{
+  $.ajax({
+    type: 'GET',
+    url: fnGetContextPath() + '/members/page/' + vPage + '/display/' + vDisplay,
+    dataType: 'json',
+    success: (resData)=>{  /*
+                              resData = {
+                                "members": [
+                                  {
+                                    "addressNo": 1,
+                                    "zonecode": '12345',
+                                    "address": '서울시 구로구'
+                                    "detailAddress": '디지털로',
+                                    "extraAddress": '(가산동)',
+                                    "member": {
+                                      "memberNo": 1,
+                                      "email": 'aaa@bbb',
+                                      "name": 'gildong',
+                                      "gender": 'none'
+                                    }
+                                  }, ...
+                                ],
+                                "total": 30,
+                                "paging": '< 1 2 3 4 5 6 7 8 9 10 >'
+                              }
+                           */
+      jqTotal.html('총 회원 ' + resData.total + '명');
+      jqMembers.empty();
+      $.each(resData.members, (i, member)=>{
+        let str = '<tr>';
+        str += '<td><input type="checkbox" class="chk-member" value="' + member.member.memberNo + '"></td>';
+        str += '<td>' + member.member.email + '</td>';
+        str += '<td>' + member.member.name + '</td>';
+        str += '<td>' + member.member.gender + '</td>';
+        str += '<td><button type="button" class="btn-detail" data-member-no="' + member.member.memberNo + '">조회</button></td>';
+        str += '</tr>';
+        jqMembers.append(str);
+      })
+      jqPaging.html(resData.paging);
+    },
+    error: (jqXHR)=>{
+      alert(jqXHR.statusText + '(' + jqXHR.status + ')');
+    }
+  })
+}
+
+// MyPageUtils 클래스의 getAsyncPaging() 메소드에서 만든 <a href="javascript:fnPaging()"> 에 의해서 실행되는 함수
+const fnPaging = (p)=>{
+  vPage = p;
+  fnGetMemberList();
+}
+
+const fnChangeDisplay = ()=>{
+  vDisplay = jqDisplay.val();
+  fnGetMemberList();
+}
+
+// 조회 버튼 -> 상세보기
+const fnGetMemberByNo = (evt)=>{
+  $.ajax({
+    type: 'GET',
+    url: fnGetContextPath() + '/members/' + evt.target.dataset.memberNo,
+    dataType: 'json'
+  }).done(resData=>{  /* resData = {
+                           "addressList": [
+                             {
+                               "addressNo": 1,
+                               "zonecode": "12345",
+                               "address": "서울시 구로구 디지털로",
+                               "detailAddress": "카카오",
+                               "extraAddress": "(가산동)"
+                             },
+                             ...
+                           ],
+                           "member": {
+                             "memberNo": 1,
+                             "email": "email@email.com",
+                             "name": "gildong",
+                             "gender": "man"
+                           }
+                         }
+                      */
+    fnInit();
+    if(resData.member !== null){
+      jqMemberNo.val(resData.member.memberNo);
+      jqEmail.val(resData.member.email).prop('disabled', true);
+      jqName.val(resData.member.name);
+      $(':radio[value=' + resData.member.gender + ']').prop('checked', true);
+      jqBtnRegister.prop('disabled', true);
+      jqBtnModify.prop('disabled', false);
+      jqBtnRemove.prop('disabled', false);
+    }
+    if(resData.addressList.length !== 0){
+      jqZonecode.val(resData.addressList[0].zonecode);
+      jqAddress.val(resData.addressList[0].address);
+      jqDetailAddress.val(resData.addressList[0].detailAddress);
+      jqExtraAddress.val(resData.addressList[0].extraAddress);
+    }
+  }).fail(jqXHR=>{
+    alert(jqXHR.statusText + '(' + jqXHR.status + ')');
   })
 }
 
 // 함수 호출 및 이벤트
 fnInit();
-btnInit.on('click', fnInit);
-btnRegister.on('click', fnRegisterMember);
-
-
-/* 두번째 script */
-
-// 전역 변수
-var page = 1;
-var display = 20;
-
-//함수 표현식 (함수 만들기)
-const fnMemberList = ()=>{
-  $.ajax({
-    type: 'GET',
-    url: getContextPath() + '/members/page/' + page + '/display/' + display,
-    dataType: 'json',
-    success: (resData)=>{   // resData = {"members" : [{}, {}, {}], "total" : 30}
-      total.html('총 회원 ' + resData.total + '명');
-      members.empty();
-      $.each(resData.members, (i, member)=>{
-        let str = '<tr>';
-        str += '<td><input type="checkbox" class="chk_member" value="' + member.member.memberNo + '">' +'</td>';
-        str += '<td>'+ member.member.email +'</td>';
-        str += '<td>'+ member.member.name +'</td>';
-        str += '<td>'+ member.member.gender +'</td>';
-        str += '<td><button type="button" class="btn-detail" data-member-no="' + member.member.memberNo +'">조회</button></td>';
-        str += '</tr>';
-        members.append(str);
-      })
-      paging.html(resData.paging);
-    },
-    error: (jqXHR)=>{
-      alert(jqXHR.statusText + '(' + jqXHR.status + ')');
-    }
-  })  
-}
-
-const fnChangeDisplay = ()=>{
-  jqdisplay.val();
-  fnMemberList();
-}
-
-const fnPaging = (p)=>{
-  page = p;
-  fnMemberList();
-}
-
-// 함수 호출 및 이벤트
-fnMemberList();
-
+jqBtnInit.on('click', fnInit);
+jqBtnRegister.on('click', fnRegisterMember);
+fnGetMemberList();
+jqDisplay.on('change', fnChangeDisplay);
+$(document).on('click', '.btn-detail', (evt)=>{ fnGetMemberByNo(evt); });
+ 
+ 

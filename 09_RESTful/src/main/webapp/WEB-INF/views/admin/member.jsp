@@ -13,6 +13,7 @@
 
   <div>
     <h1>회원관리</h1>
+    <input type="hidden" id="member-no">
     <div>
       <label for="email">이메일</label>
       <input type="text" id="email" />
@@ -22,18 +23,18 @@
       <input type="text" id="name" />
     </div>
     <div>
-      <label for="none">선택안함</label>
       <input type="radio" id="none" name="gender" value="none" checked />
-      <label for="man">남</label>
+      <label for="none">선택안함</label>
       <input type="radio" id="man" name="gender" value="man" />
-      <label for="woman">여</label>
+      <label for="man">남</label>
       <input type="radio" id="woman" name="gender" value="woman" />
+      <label for="woman">여</label>
     </div>
     
     <div>
-      <input type="text" id="zonecode" placeholder="우편번호">
+      <input type="text" id="zonecode" onclick="execDaumPostcode()" placeholder="우편번호" readonly>
       <input type="button" onclick="execDaumPostcode()" value="우편번호 찾기"><br>
-      <input type="text" id="address" placeholder="주소"><br>
+      <input type="text" id="address" placeholder="주소" readonly><br>
       <input type="text" id="detailAddress" placeholder="상세주소">
       <input type="text" id="extraAddress" placeholder="참고항목">
       
@@ -107,6 +108,7 @@
     <div>
       <div id="total"></div>
       <div>
+        <button type="button" id="btn-select-remove">선택삭제</button>
         <select id="display">
           <option>20</option>
           <option>50</option>
@@ -130,57 +132,111 @@
           </tr>
         </tfoot>
       </table>
-      <button type="button" id="btn-select-remove">선택삭제</button>
     </div>
         
   </div>  
   
   <script src="${contextPath}/resources/js/member.js"></script>
   <script>
-  // jquery 객체 선언
-  var btnDetail = $('.btn-detail');
   
-  // 함수 표햔식 (함수 만들기)
-  const getMemberByNo = (evt)=>{
+  // 객체 선언
+  
+  
+  // 함수 표현식(함수 만들기)
+  const fnModifyMember = ()=>{
 	  $.ajax({
-		  type: 'GET',
-		  url: getContextPath() + '/members/' + evt.target.dataset.memberNo,
-		  dataType: 'json'
-	  }).done(resData=>{   
-		  /* resData = {
-			  "addressList": [
-				  {
-					  "addressNo": 1,
-					  "zonecode": "1234",
-					  "address": "ddd",
-					  "detailAddress": "ddd",
-					  "extraAddress": "(ddd)"
-				  },
-				  ...
-			  ],
-			  "member": {
-				  "memberNo":1,
-				  "email": eee,
-					"name": "nnn",
-					"gender": "man"
+		  type: 'PUT',
+		  url: fnGetContextPath() + '/members',
+		  contentType: 'application/json',   // java 쪽에서 알 수 있게 전달해줘야함
+		  data: JSON.stringify({
+			  'memberNo': jqMemberNo.val(),
+			  'name': jqName.val(),
+			  'gender': $(':radio:checked').val(),
+			  'zonecode': jqZonecode.val(),
+			  'address': jqAddress.val(),
+			  'detailAddress': jqDetailAddress.val(),
+			  'extraAddress': jqExtraAddress.val()
+		  }),
+		  dataType: 'json',
+		  success: (resData)=>{     // resData = {"updateCount": 2}
+			  if(resData.updateCount === 2) {
+				  alert('정보 수정 완료');
+				  fnGetMemberList();
+			  } else {
+				  alert('회원 정보가 수정되지 않았습니다.');				  
 			  }
-	  } */
-		  email.val(resData.member.email);
-		  mName.val(resData.member.name);
-		  $(':radio[value=' + resData.member.gender + ']').prop('checked', true);
-	    zonecode.val(resData.addressList[0].zonecode);
-	    address.val(resData.addressList[0].address);
-	    detailAddress.val(resData.addressList[0].detailAddress);
-	    extraAddress.val(resData.addressList[0].extraAddress);
+		  },
+		  error: (jqXHR)=>{
+			  alert(jqXHR.statusText + '(' + jqXHR.status + ')');
+		  }
+	  })
+  }
+  
+  const fnRemoveMember = ()=>{
+	  if(!confirm('삭제할까요?')) {
+		  return;
+	  }
+	  $.ajax({
+		  type: 'DELETE',
+		  url: fnGetContextPath() + '/member/' + jqMemberNo.val(),
+		  dataType: 'json'
+	  }).done(resData=>{   // resData = {"deleteCount": 1}
+		  if(resData.deleteCount === 1) {
+			  alert('회원 정보 삭제 성공');
+			  fnInit();
+			  vPage = 1;
+			  fnGetMemberList();
+		  } else {
+			  alert('회원 정보가 삭제되지 않았습니다.')
+		  }
 	  }).fail(jqXHR=>{
 		  alert(jqXHR.statusText + '(' + jqXHR.status + ')');
 	  })
   }
   
+  const fnRemoveMembers = ()=>{
+	  // var jqCheckMember = $('.chk-member');
+	  // 체크된 요소를 배열에 저장하기
+	  let arr = [];  // 배열에 삭제될 번호들 저장한 것임
+	  $.each($('.chk-member'), (i, chk)=>{  // chk 는 jquery 객체가 아니라 js 객체라서 chk.val() 쓰지 못함
+		  if($(chk).is(':checked')) {
+			  arr.push(chk.value);
+		  }
+	  })
+	  // 체크 된 요소가 없으면 함수 종료
+	  if(arr.length === 0) {
+		  alert('선택된 회원 정보가 없음');
+		  return;
+	  }
+	  // 삭제 확인
+	  if(!confirm('선택된 회원정보를 삭제할고야?')) {
+		  return;
+	  }
+	  // 삭제 ㄱ
+	  $.ajax({
+		  type: 'DELETE',
+		  url: fnGetContextPath() + '/members/' + arr.join(','),  //  arr.join(',') : arr 안에 있는 객체들을 쪼로로 불러와서 나열해주는 것. ',' 로 연결해줄 것
+		  dataType: 'json',
+		  success: (resData)=>{   // {"deleteCount": 3}
+			  if(resData.deleteCount === arr.length) {
+				  alert('선택된 회원정보 삭제 완료함');
+				  vPage = 1;
+				  fnGetMemberList();
+			  } else {
+				  alert('선택된 회원 정보 삭제 실패');
+			  }
+		  },
+		  error: (jqXHR)=>{
+			  alert(jqXHR.statusText + '(' + jqXHR.status + ')');
+		  }
+	  })
+  }
+  
   // 함수 호출 및 이벤트
-  $(document).on('click', '.btn-detail', (evt)=>{
-	  getMemberByNo(evt);
-  })
+  jqBtnModify.on('click', fnModifyMember);
+  jqBtnRemove.on('click', fnRemoveMember);
+  jqBtnSelectRemove.on('click', fnRemoveMembers);
+  
   </script>
   
 </body>

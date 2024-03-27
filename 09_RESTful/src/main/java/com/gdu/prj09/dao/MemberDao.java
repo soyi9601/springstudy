@@ -10,7 +10,13 @@ public interface MemberDao {
 
   int insertMember(MemberDto member);
   int insertAddress(AddressDto address);
-  int updateMember(MemberDto member);
+  int updateMember(Map<String, Object> map);
+  int updateAddress(Map<String, Object> map);
+  
+  // int updateMember(MemberDto member);
+  // int updateAddress(AddressDto address);
+  // update 에서 Address 와 Member 를 구분하지말고 Map 으로 같이 보내주기
+  
   int deleteMember(int memberNo);
   int deleteMembers(List<String> memberNoList);   // String 타입의 List인 memberNoList
   int getTotalMemberCount();    // 페이징 처리

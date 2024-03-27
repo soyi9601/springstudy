@@ -1,6 +1,7 @@
 package com.gdu.prj09.service;
 
 import java.io.PrintWriter;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -109,21 +110,40 @@ public class MemberServiceImpl implements MemberService {
   }
 
   @Override
-  public ResponseEntity<Map<String, Object>> modifyMember(MemberDto member) {
-    // TODO Auto-generated method stub
-    return null;
+  public ResponseEntity<Map<String, Object>> modifyMember(Map<String, Object> map) {
+    
+    int updateMemberCount = memberDao.updateMember(map);
+    
+    /* SQL 에서 강의 중에는 Address_t 를 채우지 않고 LEFTJOIN 으로 처리했기 때문에 하단 소스가 필요함.
+     * INNERJOIN 으로 처리 완료를 했기 때문에 굳이 필요하지 않을 듯?!*/ 
+    int updateAddressCount = memberDao.updateAddress(map);
+    if(updateAddressCount == 0) {
+      AddressDto address = AddressDto.builder()
+                               .zonecode((String)map.get("zonecode"))
+                               .address((String)map.get("address"))
+                               .detailAddress((String)map.get("detailAddress"))
+                               .extraAddress((String)map.get("extraAddress"))
+                               .member(MemberDto.builder()
+                                   .memberNo(Integer.parseInt((String)map.get("memberNo")))
+                                 .build())
+                             .build();
+      updateAddressCount = memberDao.insertAddress(address);
+    } 
+     
+    return new ResponseEntity<Map<String,Object>>(Map.of("updateCount", updateMemberCount + updateAddressCount)
+                                                  , HttpStatus.OK) ;
   }
 
   @Override
   public ResponseEntity<Map<String, Object>> removeMember(int memberNo) {
-    // TODO Auto-generated method stub
-    return null;
+    return new ResponseEntity<Map<String,Object>>(Map.of("deleteCount", memberDao.deleteMember(memberNo))
+                                                    , HttpStatus.OK);
   }
 
   @Override
   public ResponseEntity<Map<String, Object>> removeMembers(String memberNoList) {
-    // TODO Auto-generated method stub
-    return null;
+    return new ResponseEntity<Map<String,Object>>(Map.of("deleteCount", memberDao.deleteMembers(Arrays.asList(memberNoList.split(","))))
+                                                    , HttpStatus.OK);
   }
-
+  
 }

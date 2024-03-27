@@ -25,7 +25,7 @@ public interface MemberService {
   ResponseEntity<Map<String, Object>> getMembers(int page, int display);
   ResponseEntity<Map<String, Object>> getMemberByNo(int memberNo);
   ResponseEntity<Map<String, Object>> registerMember(Map<String, Object> map, HttpServletResponse response);   // 중복체크를 위해서 HttpServletResponse를 같이 파라미터로 넘겨주는 것임
-  ResponseEntity<Map<String, Object>> modifyMember(MemberDto member);
+  ResponseEntity<Map<String, Object>> modifyMember(Map<String, Object> map);
   ResponseEntity<Map<String, Object>> removeMember(int memberNo);   // 주소체계 : members/1 을 불러와서 지울 수 있음(삭제, 상세보기)
   ResponseEntity<Map<String, Object>> removeMembers(String memberNoList);
 }
