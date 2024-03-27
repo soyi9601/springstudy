@@ -143,99 +143,10 @@
   
   
   // 함수 표현식(함수 만들기)
-  const fnModifyMember = ()=>{
-	  $.ajax({
-		  type: 'PUT',
-		  url: fnGetContextPath() + '/members',
-		  contentType: 'application/json',   // java 쪽에서 알 수 있게 전달해줘야함
-		  data: JSON.stringify({
-			  'memberNo': jqMemberNo.val(),
-			  'name': jqName.val(),
-			  'gender': $(':radio:checked').val(),
-			  'zonecode': jqZonecode.val(),
-			  'address': jqAddress.val(),
-			  'detailAddress': jqDetailAddress.val(),
-			  'extraAddress': jqExtraAddress.val()
-		  }),
-		  dataType: 'json',
-		  success: (resData)=>{     // resData = {"updateCount": 2}
-			  if(resData.updateCount === 2) {
-				  alert('정보 수정 완료');
-				  fnGetMemberList();
-			  } else {
-				  alert('회원 정보가 수정되지 않았습니다.');				  
-			  }
-		  },
-		  error: (jqXHR)=>{
-			  alert(jqXHR.statusText + '(' + jqXHR.status + ')');
-		  }
-	  })
-  }
   
-  const fnRemoveMember = ()=>{
-	  if(!confirm('삭제할까요?')) {
-		  return;
-	  }
-	  $.ajax({
-		  type: 'DELETE',
-		  url: fnGetContextPath() + '/member/' + jqMemberNo.val(),
-		  dataType: 'json'
-	  }).done(resData=>{   // resData = {"deleteCount": 1}
-		  if(resData.deleteCount === 1) {
-			  alert('회원 정보 삭제 성공');
-			  fnInit();
-			  vPage = 1;
-			  fnGetMemberList();
-		  } else {
-			  alert('회원 정보가 삭제되지 않았습니다.')
-		  }
-	  }).fail(jqXHR=>{
-		  alert(jqXHR.statusText + '(' + jqXHR.status + ')');
-	  })
-  }
-  
-  const fnRemoveMembers = ()=>{
-	  // var jqCheckMember = $('.chk-member');
-	  // 체크된 요소를 배열에 저장하기
-	  let arr = [];  // 배열에 삭제될 번호들 저장한 것임
-	  $.each($('.chk-member'), (i, chk)=>{  // chk 는 jquery 객체가 아니라 js 객체라서 chk.val() 쓰지 못함
-		  if($(chk).is(':checked')) {
-			  arr.push(chk.value);
-		  }
-	  })
-	  // 체크 된 요소가 없으면 함수 종료
-	  if(arr.length === 0) {
-		  alert('선택된 회원 정보가 없음');
-		  return;
-	  }
-	  // 삭제 확인
-	  if(!confirm('선택된 회원정보를 삭제할고야?')) {
-		  return;
-	  }
-	  // 삭제 ㄱ
-	  $.ajax({
-		  type: 'DELETE',
-		  url: fnGetContextPath() + '/members/' + arr.join(','),  //  arr.join(',') : arr 안에 있는 객체들을 쪼로로 불러와서 나열해주는 것. ',' 로 연결해줄 것
-		  dataType: 'json',
-		  success: (resData)=>{   // {"deleteCount": 3}
-			  if(resData.deleteCount === arr.length) {
-				  alert('선택된 회원정보 삭제 완료함');
-				  vPage = 1;
-				  fnGetMemberList();
-			  } else {
-				  alert('선택된 회원 정보 삭제 실패');
-			  }
-		  },
-		  error: (jqXHR)=>{
-			  alert(jqXHR.statusText + '(' + jqXHR.status + ')');
-		  }
-	  })
-  }
   
   // 함수 호출 및 이벤트
-  jqBtnModify.on('click', fnModifyMember);
-  jqBtnRemove.on('click', fnRemoveMember);
-  jqBtnSelectRemove.on('click', fnRemoveMembers);
+  
   
   </script>
   
