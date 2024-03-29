@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns:mybatis-spring="http://mybatis.org/schema/mybatis-spring"
+  xmlns:tx="http://www.springframework.org/schema/tx"
+  xmlns:aop="http://www.springframework.org/schema/aop"
+  xsi:schemaLocation="http://mybatis.org/schema/mybatis-spring http://mybatis.org/schema/mybatis-spring-1.2.xsd
+		http://www.springframework.org/schema/beans https://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-4.3.xsd
+		http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.3.xsd">
+	
+	<!-- Root Context: defines shared resources visible to all other web components -->
+	<bean class="com.zaxxer.hikari.HikariConfig"
+        id="hikariConfig"
+        scope="singleton">
+    <property name="driverClassName" value="net.sf.log4jdbc.sql.jdbcapi.DriverSpy"/>
+    <property name="jdbcUrl" value="jdbc:log4jdbc:oracle:thin:@localhost:1521:xe"/>
+    <property name="username" value="GD"/>
+    <property name="password" value="1111"/>
+  </bean>
+  
+  <bean class="com.zaxxer.hikari.HikariDataSource"
+        id="hikariDataSource"
+        scope="singleton">
+    <constructor-arg ref="hikariConfig"/>
+  </bean>
+  
+  <bean class="org.mybatis.spring.SqlSessionFactoryBean"
+        id="sqlSessionFactoryBean"
+        scope="singleton">
+    <property name="dataSource" ref="hikariDataSource"/>
+    <property name="configLocation"  value="classpath:com/gdu/myapp/mybatis/config/mybatis-config.xml"/>
+    <property name="mapperLocations" value="classpath:com/gdu/myapp/mybatis/mapper/*.xml"/>
+  </bean>
+  
+  <bean class="org.mybatis.spring.SqlSessionTemplate"
+        id="sqlSessionTemplate"
+        scope="singleton">
+    <constructor-arg ref="sqlSessionFactoryBean"/>
+  </bean>
+  
+  <bean class="org.mybatis.spring.mapper.MapperFactoryBean">
+    <property name="mapperInterface" value="com.gdu.myapp.mapper.UserMapper" />
+    <property name="sqlSessionFactory" ref="sqlSessionFactoryBean" />
+  </bean>
+  
+  <!-- ******************* NameSpaces 체크 꼭 해주기! *********************  -->  
+  <!-- 트랜잭션 관리자 등록 -->
+  <bean class="org.springframework.jdbc.datasource.DataSourceTransactionManager"
+        id="dataSourceTransactionManager"
+        scope="singleton">
+    <property name="dataSource" ref="hikariDataSource" />
+  </bean>
+  
+  <!-- 트랜잭션 Advice 등록 -->
+  <tx:advice transaction-manager="dataSourceTransactionManager" id="txAdvice">
+    <tx:attributes>
+      <tx:method name="*"/>
+      <tx:method name="get*" read-only="true"/>
+      <!-- 내용의 변화가 없는 메소드. 
+      DB가 변하지 않는 메소드 -> 트랜잭션이 일어나지 않는 메소드.
+      read-only 를 쓰는 이유는 굳이 트랜잭션을 개입시킬 필요가 없으니 성능이 좋아지라고 적는 것. 안넣는다고해서 동작을 안하는 것은 아님 -->
+    </tx:attributes>
+  </tx:advice>
+  
+  <!-- Aspect 설정 -->
+  <aop:config>
+    <aop:pointcut expression="execution (* com.gdu.myapp.service.*Impl.*(..))" 
+                  id="txPointCut"/>
+    <aop:advisor advice-ref="txAdvice"
+                 pointcut-ref="txPointCut"/>
+  </aop:config>
+  
+  <!-- AspectJ 허용 (@EnableAspectJAutoProxy) -->
+  <aop:aspectj-autoproxy />  
+  
+  <!-- Mapper Interface 가 저장된 패키지 명시 -->
+  <mybatis-spring:scan base-package="com.gdu.myapp.mapper"/>
+    
+</beans>

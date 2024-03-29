@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.gdu.myapp.mapper.UserMapper">
+  
+  <select id="getUserByMap"
+          parameterType="Map"
+          resultType="UserDto">
+    SELECT USER_NO, EMAIL, PW, NAME, GENDER, MOBILE, EVENT_AGREE, SIGNUP_KIND, PW_MODIFY_DT, SIGNUP_DT
+      FROM USER_T
+    <where>
+      <if test="email!=null">EMAIL = #{email}</if>
+      <if test="pw!=null">AND PW = #{pw}</if> 
+    </where>
+    <!-- 조건(IF)가 있을 거 같으면 WHERE 을 태그로 입력 -->
+  </select>
+  
+  <insert id="insertUser"
+          parameterType="UserDto">
+    
+  </insert>
+  
+  
+</mapper>
