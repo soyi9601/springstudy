@@ -21,5 +21,21 @@
     
   </insert>
   
+  <insert id="insertAccessHistory"
+          parameterType="Map">
+    INSERT INTO ACCESS_HISTORY_T (
+        ACCESS_HISTORY_NO
+      , EMAIL
+      , IP
+      , SIGNIN_DT
+      , SIGNOUT_DT
+    ) VALUES (
+      ACCESS_HISTORY_SEQ.NEXTVAL
+      , #{email}
+      , #{ip}
+      , CURRENT_DATE
+      , NULL
+    )
+  </insert>
   
 </mapper>

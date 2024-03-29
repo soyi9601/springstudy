@@ -48,14 +48,17 @@ public class UserServiceImpl implements UserService {
       
       String email = request.getParameter("email");
       String pw = MySecurityUtils.getSha256(request.getParameter("pw"));    // 사용자가 입력한 패스워드가 암호화 돼서 나올 것. 
+      String ip = request.getRemoteAddr();    // IP 저장! *********
       
       // 우리는 이것을 Map 에 담기로 함
       Map<String, Object> params = Map.of("email", email
-          , "pw", pw);
+                                        , "pw", pw
+                                        , "ip", ip);
       
       UserDto user = userMapper.getUserByMap(params);
       
       if(user != null) {
+        userMapper.insertAccessHistory(params); // 기록 남기기
         // 로그인의 기본 원리는 session 이라는 저장소(데이터바인딩 영역)에 정보를 올려주는 것.
         request.getSession().setAttribute("user", user);
         response.sendRedirect(request.getParameter("url"));

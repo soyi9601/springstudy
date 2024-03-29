@@ -21,7 +21,11 @@
 </head>
 <body>
 
-  <a href="${contextPath}/user/signin.page">Sign In</a>
-    
+    <c:if test="${sessionScope.user == null}">
+      <a href="${contextPath}/user/signin.page">Sign In</a>
+    </c:if>
+    <c:if test="${sessionScope.user != null}">
+      ${sessionScope.user.name}님 반갑
+    </c:if>
 </body>
 </html>
