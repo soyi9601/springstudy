@@ -15,12 +15,7 @@
     </where>
     <!-- 조건(IF)가 있을 거 같으면 WHERE 을 태그로 입력 -->
   </select>
-  
-  <insert id="insertUser"
-          parameterType="UserDto">
-    
-  </insert>
-  
+
   <insert id="insertAccessHistory"
           parameterType="Map">
     INSERT INTO ACCESS_HISTORY_T (
@@ -36,6 +31,21 @@
       , CURRENT_DATE
       , NULL
     )
+  </insert>
+  
+  <select id="getLeaveUserByMap"
+          parameterType="Map"
+          resultType="LeaveUserDto">
+    SELECT LEAVE_USER_NO
+      FROM LEAVE_USER_T
+    <where>
+      <if test="email!=null">EMAIL = #{email}</if>
+    </where>
+  </select>
+  
+  <insert id="insertUser"
+          parameterType="UserDto">
+    
   </insert>
   
 </mapper>

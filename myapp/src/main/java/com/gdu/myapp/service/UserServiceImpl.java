@@ -7,6 +7,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import com.gdu.myapp.dto.UserDto;
@@ -42,26 +44,37 @@ public class UserServiceImpl implements UserService {
   */
 
   @Override
-  public void signin(HttpServletRequest request, HttpServletResponse response) {
-    
+  public void signin(HttpServletRequest request, HttpServletResponse response) {    
     try {
       
+      // 입력한 아이디
       String email = request.getParameter("email");
+      
+      // 입력한 비밀번호 + SHA256 방식의 암호화
       String pw = MySecurityUtils.getSha256(request.getParameter("pw"));    // 사용자가 입력한 패스워드가 암호화 돼서 나올 것. 
+      
+      // 접속 IP (접속 기록을 남길 때)
       String ip = request.getRemoteAddr();    // IP 저장! *********
       
-      // 우리는 이것을 Map 에 담기로 함
+      // DB로 보낼 정보 (email/pw -> USER_T, email/IP -> ACCESS_HISTORY_T) *우리는 이것을 Map 에 담기로 함.
       Map<String, Object> params = Map.of("email", email
                                         , "pw", pw
                                         , "ip", ip);
       
+      // email/pw 가 일치하는 회원 정보 가져오기
       UserDto user = userMapper.getUserByMap(params);
       
+      // 일치하는 회원 있음 (Sign In 성공)
       if(user != null) {
-        userMapper.insertAccessHistory(params); // 기록 남기기
-        // 로그인의 기본 원리는 session 이라는 저장소(데이터바인딩 영역)에 정보를 올려주는 것.
+        // 접속 기록 ACCESS_HISTORY_T 에 남기기
+        userMapper.insertAccessHistory(params); 
+        // ****** 로그인의 기본 원리는 session 이라는 저장소(데이터바인딩 영역)에 정보를 올려주는 것. "user" 이런 정보는 모든 팀원들이 공유하고 있어야 할 정보
+        // (브라우저 닫기 전까지 정보가 유지되는 공간, 기본 30분 정보 유지)
         request.getSession().setAttribute("user", user);
+        // Sign In 후 페이지 이동
         response.sendRedirect(request.getParameter("url"));
+      
+      // 일치하는 회원 없음 (Sign In 실패)
       } else {
         response.setContentType("text/html; charset=UTF-8");
         PrintWriter out = response.getWriter();
@@ -75,9 +88,17 @@ public class UserServiceImpl implements UserService {
       
     } catch (Exception e) {
       e.printStackTrace();
-    }
-
-    
+    }    
+  }
+  
+  @Override
+  public ResponseEntity<Map<String, Object>> checkEmail(Map<String, Object> params) {
+    // Email 을 쓸 수 있다 vs 없다
+                          // 정상적인 사용자가 없어야 이메일을 사용 가능
+    boolean enableEmail = userMapper.getUserByMap(params) == null
+                       && userMapper.getLeaveUserByMap(params) == null;
+    return new ResponseEntity<>(Map.of("enableEmail", enableEmail)
+                              , HttpStatus.OK);
   }
 
   @Override
@@ -97,5 +118,6 @@ public class UserServiceImpl implements UserService {
     // TODO Auto-generated method stub
 
   }
+  
 
 }
