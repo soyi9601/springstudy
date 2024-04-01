@@ -6,36 +6,31 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import com.gdu.myapp.dto.UserDto;
 import com.gdu.myapp.mapper.UserMapper;
+import com.gdu.myapp.utils.MyJavaMailUtils;
 import com.gdu.myapp.utils.MySecurityUtils;
-
-import lombok.RequiredArgsConstructor;
 
 
 @Service
 public class UserServiceImpl implements UserService {
 
   private final UserMapper userMapper;
+  private final MyJavaMailUtils myJavaMailUtils;
   
+  
+
   // @Autowired :: 생략 가능하지만 명시할 수 있음.
-  public UserServiceImpl(UserMapper userMapper) {
+  public UserServiceImpl(UserMapper userMapper, MyJavaMailUtils myJavaMailUtils) {
     super();
     this.userMapper = userMapper;
+    this.myJavaMailUtils = myJavaMailUtils;
   }
-  
-  /*
-   * public UserServiceImpl(@Autowired UserMapper userMapper) {
-   *   super();
-   *   this.userMapper = userMapper;
-   * }  -- UserMapper userMapper :: 매개변수로 사용
-   */
-  
+    
   /*
    * 위의 생성자를 만들던가
    * @RequiredArgsConstructor ::  annotation 을 쓰던지
@@ -91,6 +86,8 @@ public class UserServiceImpl implements UserService {
     }    
   }
   
+  
+
   @Override
   public ResponseEntity<Map<String, Object>> checkEmail(Map<String, Object> params) {
     // Email 을 쓸 수 있다 vs 없다
@@ -98,6 +95,23 @@ public class UserServiceImpl implements UserService {
     boolean enableEmail = userMapper.getUserByMap(params) == null
                        && userMapper.getLeaveUserByMap(params) == null;
     return new ResponseEntity<>(Map.of("enableEmail", enableEmail)
+                              , HttpStatus.OK);
+  }
+  
+  @Override
+  public ResponseEntity<Map<String, Object>> sendCode(Map<String, Object> params) {
+    // Map 에 받는 사람 이메일 정보 들어있음
+    
+    // 인증코드 생성 (만드는 방법은 MySecurityUtils 안에 있음)
+    String code = MySecurityUtils.getRandomString(6, false, true);
+    
+    // 메일 보내기
+    myJavaMailUtils.sendMail((String)params.get("email")
+                           , "myapp 인증요청"
+                           , "<div>인증코드는 <strong>" + code + " </storng> 입니다.</div>");
+    
+    // 인증코드 입력화면으로 보내주는 값
+    return new ResponseEntity<>(Map.of("code", code)
                               , HttpStatus.OK);
   }
 

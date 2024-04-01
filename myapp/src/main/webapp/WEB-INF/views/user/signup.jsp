@@ -34,14 +34,14 @@
         id="frm-signup">
     
     <div class="mb-3">
-      <label for="email">아이디</label>
-      <input type="text" name="email" id="email" placeholder="aaa@aaa.aaa" />
+      <label for="inp-email">아이디</label>
+      <input type="text" name="email" id="inp-email" placeholder="aaa@aaa.aaa" />
       <button type="button" id="btn-code"  class="btn btn-primary">인증코드 받기</button>
       <div id="msg-email"></div>
     </div>
     
     <div class="mb-3">
-      <input type="text" id="code" placeholder="인증코드입력" disabled /> <!-- 이 값은 DB 에 저장해서 컨트롤러로 보낼 필요가 없기 때문에 name 을 붙일 필요 없음 -->
+      <input type="text" id="inp-code" placeholder="인증코드입력" disabled /> <!-- 이 값은 DB 에 저장해서 컨트롤러로 보낼 필요가 없기 때문에 name 을 붙일 필요 없음 -->
       <button type="button"  id="btn-verify-code"  class="btn btn-primary">인증하기</button>
     </div>
     
@@ -100,9 +100,9 @@ const fnCheckEmail = ()=>{
   })	
 	*/
 	
-	let email = document.getElementById('email');
+	let inpEmail = document.getElementById('inp-email');
 	let regEmail = /^[A-Za-z0-9-_]{2,}@[A-Za-z0-9]+(\.[A-Za-z]{2,6}){1,2}$/;
-	if(!regEmail.test(email.value)){
+	if(!regEmail.test(inpEmail.value)){
 		alert('이메일 형식이 올바르지 않습니다.');
 		return;
 	}
@@ -114,7 +114,7 @@ const fnCheckEmail = ()=>{
 		},
 		// javascript 객체를 넣으면 JSON 으로 바뀐다.
 		body: JSON.stringify({
-			'email': email.value
+			'email': inpEmail.value
 		}) 
 	})
 	// 받아온 응답객체에서 JSON만 꺼내겠다.
@@ -132,9 +132,23 @@ const fnCheckEmail = ()=>{
 		    },
 		    // javascript 객체를 넣으면 JSON 으로 바뀐다.
 		    body: JSON.stringify({
-		      'email': email.value
+		      'email': inpEmail.value    // 이메일 받는 사람 -> Map 에 들어 있음
 		    })
-			});
+			})
+			.then(response => response.json())
+			.then(resData => {   // resData = {"code": "123qwe"}
+			  let inpCode = document.getElementById('inp-code');
+			  let btnVerifyCode = document.getElementById('btn-verify-code');
+			  alert(inpEmail.value + '로 인증코드를 전송했습니다.');
+			  inpCode.disabled = false;
+				btnVerifyCode.addEventListener('click', (evt)=>{
+					if(resData.code === inpCode.value) {
+						alert('인증되었습니다.');
+					} else {
+						alert('인증되지 않았습니다.');
+					}
+				})
+			})
 		} else {  // 똑같은 이메일이 있어서 통과 실패
 			document.getElementById('msg-email').innerHTML = '<p>이미 사용 중인 이메일 입니다.</p>';
 			return;

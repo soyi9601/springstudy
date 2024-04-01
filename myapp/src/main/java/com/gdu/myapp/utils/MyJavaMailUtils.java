@@ -13,8 +13,10 @@ import javax.mail.internet.MimeMessage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.env.Environment;
+import org.springframework.stereotype.Component;
 
 @PropertySource(value="classpath: email.properties")
+@Component
 public class MyJavaMailUtils {
 
   @Autowired
@@ -43,7 +45,7 @@ public class MyJavaMailUtils {
     try {
       // 메일 만들기 (보내는 사람 + 받는 사람 + 제목 + 내용)
       MimeMessage mimeMessage = new MimeMessage(session);
-      mimeMessage.setFrom(new InternetAddress(env.getProperty("spring.mail.username"), "myapp"));
+      mimeMessage.setFrom(new InternetAddress(env.getProperty("spring.mail.username"), "myapp"));   // 보내는 사람
       mimeMessage.setRecipient(Message.RecipientType.TO, new InternetAddress(to));  // 받는 사람
       mimeMessage.setSubject(subject);
       mimeMessage.setContent(content, "text/html; charset=UTF-8");
