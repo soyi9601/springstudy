@@ -115,7 +115,7 @@ public class UserServiceImpl implements UserService {
     
     // 인증코드 생성 (만드는 방법은 MySecurityUtils 안에 있음)
     String code = MySecurityUtils.getRandomString(6, true, true);
-    // System.out.println(code);
+    System.out.println("인증코드 : " + code);
     
     // 메일 보내기
     myJavaMailUtils.sendMail((String)params.get("email")
@@ -130,6 +130,12 @@ public class UserServiceImpl implements UserService {
   @Override
   public void signout(HttpServletRequest request, HttpServletResponse response) {
     
+            
+  }
+
+  @Override
+  public void signup(HttpServletRequest request, HttpServletResponse response) {
+    
     // 전달된 파라미터
     String email = request.getParameter("email");
     String pw = MySecurityUtils.getSha256(request.getParameter("pw"));          // pw : 암호화 작업
@@ -137,6 +143,8 @@ public class UserServiceImpl implements UserService {
     String mobile = request.getParameter("mobile");
     String gender = request.getParameter("gender");
     String event = request.getParameter("event");
+    
+    String ip = request.getRemoteAddr();
     
     // Mapper 로 보낼 UserDto 객체 생성
     UserDto user = UserDto.builder()
@@ -150,12 +158,30 @@ public class UserServiceImpl implements UserService {
     
     // 회원 가입
     int insertCount = userMapper.insertUser(user);    // userDto 의 타입의 user 전달!
+    
+    // 응답 만들기 (성공하면 sign in 처리하고 /main.do 이동, 실패하면 뒤로 가기)
+    
+    try {
+      response.setContentType("text/html; charset=UTF-8");
+      PrintWriter out = response.getWriter();
+      out.println("<script>");
+      if(insertCount == 1) {
+        Map<String, Object> map = Map.of("email", email, "pw", pw, "ip", ip);
         
-  }
-
-  @Override
-  public void signup(HttpServletRequest request, HttpServletResponse response) {
-    // TODO Auto-generated method stub
+        // 세션에 user 저장하기
+        request.getSession().setAttribute("user", userMapper.getUserByMap(map));
+        userMapper.insertAccessHistory(map);
+        
+        out.println("location.href='" + request.getContextPath() + "/main.page'");
+      } else {
+        out.println("history.back()");
+      }
+      out.println("</script>");
+      out.flush();
+      out.close();
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
 
   }
 

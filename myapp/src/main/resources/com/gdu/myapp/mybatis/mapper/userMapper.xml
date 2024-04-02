@@ -57,17 +57,19 @@
       , PW_MODIFY_DT
       , SIGNUP_DT
     ) VALUES (
-        USER_SEQ,NEXTVAL
+        USER_SEQ.NEXTVAL
       , #{email}
       , #{pw}
       , #{name}
       , #{gender}
       , #{mobile}
       , #{eventAgree}
-      , 0     <!-- 직접가입 : 0 -->
+      , 0
       , NULL
       , CURRENT_DATE
     )
+    
+    
   </insert>
   
 </mapper>

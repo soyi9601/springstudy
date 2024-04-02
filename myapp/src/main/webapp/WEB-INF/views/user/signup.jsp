@@ -279,7 +279,7 @@ const fnCheckMobile = () => {
 	}
 }
 
-const fnCheckAgree = () -> {
+const fnCheckAgree = () => {
 	let chkService = document.getElementById('chk-service');
 	agreeCheck = chkService.checked;	
 }

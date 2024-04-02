@@ -82,6 +82,10 @@ public class UserController {
     return userService.sendCode(params);
   }
   
+  @PostMapping("/signup.do")
+  public void signup(HttpServletRequest request, HttpServletResponse response) {
+    userService.signup(request, response);
+  }
  
   
 }
