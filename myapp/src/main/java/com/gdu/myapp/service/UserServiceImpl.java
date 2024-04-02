@@ -100,10 +100,22 @@ public class UserServiceImpl implements UserService {
   
   @Override
   public ResponseEntity<Map<String, Object>> sendCode(Map<String, Object> params) {
+    
+    /*
+     * 구글 앱 비밀번호 설정 방법
+     * 1. 구글에 로그인한다.
+     * 2. [계정] - [보안]
+     * 3. [Google에 로그인하는 방법] - [2단계 인증]을 사용 설정한다.
+     * 4. 검색란에 "앱 비밀번호"를 검색한다.
+     * 5. 앱 이름을 "myapp"으로 작성하고 [만들기] 버튼을 클릭한다.
+     * 6. 16자리 비밀번호가 나타나면 복사해서 사용한다. (비밀번호 사이 공백은 모두 제거한다.)
+     */
+    
     // Map 에 받는 사람 이메일 정보 들어있음
     
     // 인증코드 생성 (만드는 방법은 MySecurityUtils 안에 있음)
     String code = MySecurityUtils.getRandomString(6, true, true);
+    // System.out.println(code);
     
     // 메일 보내기
     myJavaMailUtils.sendMail((String)params.get("email")
@@ -117,8 +129,28 @@ public class UserServiceImpl implements UserService {
 
   @Override
   public void signout(HttpServletRequest request, HttpServletResponse response) {
-    // TODO Auto-generated method stub
-
+    
+    // 전달된 파라미터
+    String email = request.getParameter("email");
+    String pw = MySecurityUtils.getSha256(request.getParameter("pw"));          // pw : 암호화 작업
+    String name = MySecurityUtils.getPreventXss(request.getParameter("name"));  // 이름 : 크로스 사이트 스크립팅
+    String mobile = request.getParameter("mobile");
+    String gender = request.getParameter("gender");
+    String event = request.getParameter("event");
+    
+    // Mapper 로 보낼 UserDto 객체 생성
+    UserDto user = UserDto.builder()
+                       .email(email)
+                       .pw(pw)
+                       .name(name)
+                       .mobile(mobile)
+                       .gender(gender)
+                       .eventAgree(event == null ? 0 : 1)
+                     .build();
+    
+    // 회원 가입
+    int insertCount = userMapper.insertUser(user);    // userDto 의 타입의 user 전달!
+        
   }
 
   @Override

@@ -54,5 +54,42 @@
     <c:if test="${sessionScope.user != null}">
       ${sessionScope.user.name}님 반갑
     </c:if>
+    
+    
+    <!-- 
+    * 동기처리 : 순서를 지켜야하는 *
+    이메일 중복체크  -> 요청 (비동기 요청)
+    가능한 이메일    <- 응답
+    해당이메일로전송 -> 요청 (비동기 요청)
+    보낸코드         <- 응답
+    일치여부 : 허용 여부 판단
+    
+    비동기 요청 2개는 순서와 상관없이 요청을 하게 되는데 
+    요청 - 응답 요청 - 응답 순서를 지켜야 하기 때문에 fetch/then 을 사용한 것 (promise 내장 객체 : 순서에 맞게 기다리라고 해주는 것)
+     -->
+     
+     <!--     
+     스크립트 코드 넘어올 수 없음 === 양아취놈들이 스크립트 코드 넘기면서 DB 호출 할 때 마다 오류날 수 있음
+     name="email"   -> 스크립트 코드 넘어올 수 없음 : 정규식 처리
+     name="pw"      -> 스크립트 코드 넘어올 수 없음 : 글자수 제한
+     name="name"    -> 스크립트 코드 넘어올 수 있음 : XXS 처리해줘야함
+     name="mobile"  -> 스크립트 코드 넘어올 수 없음 : 숫자만 넘어올 수 있음
+     name="gender"  -> 스크립트 코드 넘어올 수 없음 : value 가 넘어옴 woman/man/none
+     name="event"   -> 스크립트 코드 넘어올 수 없음 : checkbox (radio 처럼 value 가능) // value를 안달아줄 때는 'on' 또는 null (request.getParameter("event") == null)
+     -->
+     
+     
+     <!-- 
+     08_File > index.jsp 확인
+     new FormData().append() 로 POST 방식을 보낼 수 있음
+     HttpServvletRequest 로 받을 수 있음
+      -->
+    
+    
+    
+    
+    
+    
+    
 </body>
 </html>

@@ -20,6 +20,7 @@
   body {
     font-family: "Roboto", sans-serif;
     font-weight: 400;
+    padding: 0 30px;
   }
 
 </style>
@@ -28,26 +29,108 @@
 <body>
 
   <h1>Sign Up</h1>
-  
+    
   <form method="POST"
         action="${contextPath}/user/signup.do"
         id="frm-signup">
-    
-    <div class="mb-3">
-      <label for="inp-email">아이디</label>
-      <input type="text" name="email" id="inp-email" placeholder="aaa@aaa.aaa" />
-      <button type="button" id="btn-code"  class="btn btn-primary">인증코드 받기</button>
-      <div id="msg-email"></div>
+  
+    <div class="row mb-3">
+      <label for="inp-email" class="col-sm-3 col-form-label">아이디</label>
+      <div class="col-sm-6"><input type="text" id="inp-email" name="email" class="form-control" placeholder="example@example.com"></div>
+      <div class="col-sm-3"><button type="button" id="btn-code" class="btn btn-primary">인증코드받기</button></div>
+      <div class="col-sm-3"id="msg-email"></div>
+    </div>
+    <div class="row mb-3">
+      <label for="inp-code" class="col-sm-3 col-form-label">인증코드</label>
+      <div class="col-sm-6"><input type="text" id="inp-code" class="form-control" placeholder="인증코드입력" disabled></div>  <!-- 이 값은 DB 에 저장해서 컨트롤러로 보낼 필요가 없기 때문에 name 을 붙일 필요 없음 -->
+      <div class="col-sm-3"><button type="button" id="btn-verify-code" class="btn btn-primary" disabled>인증하기</button></div>
     </div>
     
-    <div class="mb-3">
-      <input type="text" id="inp-code" placeholder="인증코드입력" disabled /> <!-- 이 값은 DB 에 저장해서 컨트롤러로 보낼 필요가 없기 때문에 name 을 붙일 필요 없음 -->
-      <button type="button"  id="btn-verify-code"  class="btn btn-primary">인증하기</button>
+    <hr class="my-3">
+  
+    <div class="row mb-3">
+      <label for="inp-pw" class="col-sm-3 col-form-label">비밀번호</label>
+      <div class="col-sm-6"><input type="password" id="inp-pw" name="pw" class="form-control"></div>
+      <div class="col-sm-3"></div>
+      <div class="col-sm-9" id="msg-pw"></div>
+    </div>
+    <div class="row mb-3">
+      <label for="inp-pw2" class="col-sm-3 col-form-label">비밀번호 확인</label>
+      <div class="col-sm-6"><input type="password" id="inp-pw2" class="form-control"></div>
+      <div class="col-sm-3"></div>
+      <div class="col-sm-9" id="msg-pw2"></div>
+    </div>
+    
+    <hr class="my-3">
+    
+    <div class="row mb-3">
+      <label for="inp-name" class="col-sm-3 col-form-label">이름</label>
+      <div class="col-sm-9"><input type="text" name="name" id="inp-name" class="form-control"></div>
+      <div class="col-sm-3"></div>
+      <div class="col-sm-9" id="msg-name"></div>
+    </div>
+
+    <div class="row mb-3">
+      <label for="inp-mobile" class="col-sm-3 col-form-label">휴대전화번호</label>
+      <div class="col-sm-9"><input type="text" name="mobile" id="inp-mobile" class="form-control"></div>
+      <div class="col-sm-3"></div>
+      <div class="col-sm-9" id="msg-mobile"></div>
+    </div>
+
+    <div class="row mb-3">
+      <label class="col-sm-3 form-label">성별</label>
+      <div class="col-sm-3">
+        <input type="radio" name="gender" value="none" id="rdo-none" class="form-check-input" checked>
+        <label class="form-check-label" for="rdo-none">선택안함</label>
+      </div>
+      <div class="col-sm-3">
+        <input type="radio" name="gender" value="man" id="rdo-man" class="form-check-input">
+        <label class="form-check-label" for="rdo-man">남자</label>
+      </div>
+      <div class="col-sm-3">
+        <input type="radio" name="gender" value="woman" id="rdo-woman" class="form-check-input">
+        <label class="form-check-label" for="rdo-woman">여자</label>
+      </div>
+    </div>
+    
+    <hr class="my-3">
+    
+    <div class="form-check mb-3">
+      <input type="checkbox" class="form-check-input" id="chk-service">
+      <label class="form-check-label" for="chk-service">서비스 이용약관 동의(필수)</label>
+    </div>
+    <div>
+      <textarea rows="5" class="form-control">본 약관은 ...</textarea>
+    </div>
+    
+    <div class="form-check mb-3">
+      <input type="checkbox" name="event" class="form-check-input" id="chk-event">
+      <label class="form-check-label" for="chk-event">
+        이벤트 알림 동의(선택)
+      </label>
+    </div>
+    <div>
+      <textarea rows="5" class="form-control">본 약관은 ...</textarea>
+    </div>
+    
+    <hr class="my-3">
+    
+    <div class="m-3">
+      <button type="submit" id="btn-signup" class="btn btn-primary">가입하기</button>
     </div>
     
   </form>
 
 <script>
+
+// 전역 변수
+var emailCheck = false;
+var passwordCheck = false;
+var passwordConfirm = false;
+var nameCheck = false;
+var mobileCheck = false;
+var agreeCheck = false;
+
 
 const fnGetContextPath = ()=>{
   const host = location.host;  /* localhost:8080 */
@@ -89,7 +172,7 @@ const fnCheckEmail = ()=>{
 	/*
 	fetch('이메일중복체크요청', {})
   .then(response=>response.json())
-  .then(resData->{
+  .then(resData->{        //   {"enableEmail : true"}
     if(resData.enableEmail){
       fetch('인증코드전송요청', {})
       .then(response=>response.json())
@@ -104,9 +187,10 @@ const fnCheckEmail = ()=>{
 	let regEmail = /^[A-Za-z0-9-_]{2,}@[A-Za-z0-9]+(\.[A-Za-z]{2,6}){1,2}$/;
 	if(!regEmail.test(inpEmail.value)){
 		alert('이메일 형식이 올바르지 않습니다.');
+		emailCheck = false;
 		return;
 	}
-	// fetch(주소, {옵션});
+	// feitch(주소, {옵션});
 	fetch(fnGetContextPath() + '/user/checkEmail.do', {
 		method: 'POST',
 		headers: {
@@ -125,6 +209,7 @@ const fnCheckEmail = ()=>{
 	.then(resData => {
 		// 비동기 작업은 순서가 상관없음, 그래서 순서를 지킬 수 있도록 promise 를 사용함 (fetch와 then 은 promise 가 내장객체로 되어있다.)
 		if(resData.enableEmail) { // 중복 통과
+			document.getElementById('msg-email').innerHTML = '';
 			fetch(fnGetContextPath() + '/user/sendCode.do', {
 				method: 'POST',
 		    headers: {
@@ -141,23 +226,134 @@ const fnCheckEmail = ()=>{
 			  let btnVerifyCode = document.getElementById('btn-verify-code');
 			  alert(inpEmail.value + '로 인증코드를 전송했습니다.');
 			  inpCode.disabled = false;
+			  btnVerifyCode.disabled = false;
 				btnVerifyCode.addEventListener('click', (evt)=>{
 					if(resData.code === inpCode.value) {
 						alert('인증되었습니다.');
+						emailCheck = true;
 					} else {
 						alert('인증되지 않았습니다.');
+						emailCheck = false;
 					}
 				})
 			})
 		} else {  // 똑같은 이메일이 있어서 통과 실패
 			document.getElementById('msg-email').innerHTML = '<p>이미 사용 중인 이메일 입니다.</p>';
+			emailCheck = false;
 			return;
 		}
-	})      
-	
+	})
 }
 
+const fnCheckName = () => {
+	let inpName = document.getElementById('inp-name');
+	let name = inpName.value;
+	let totalByte = 0;
+	for(let i = 0; i < name.length; i++) {
+		// charCodeAt : 이름의 코드값 확인
+		if(name.charCodeAt(i) > 127) {    // 코드값이 127(한글의 아스키 값 > 127) 초과이면 한 글자당 2바이트 처리한다.
+			totalByte += 2;
+		} else {
+			totalByte++;
+		}
+	}
+	nameCheck = (totalByte <= 100);
+	let msgName = document.getElementById('msg-name');
+	if(!nameCheck) {
+		msgName.innerHTML = '이름은 100 바이트를 초과할 수 없습니다.';
+	} else {
+		msgName.innerHTML = '';
+	}
+}
+
+const fnCheckMobile = () => {
+	let inpMobile = document.getElementById('inp-mobile');
+	let mobile = inpMobile.value;
+	mobile = mobile.replaceAll(/[^0-9]/g, '');   // g : global
+	mobileCheck = /^010[0-9]{8}$/.test(mobile);
+	let msgMobile = document.getElementById('msg-mobile');
+	if(mobileCheck) {
+		msgMobile.innerHTML = '';
+	} else {
+		msgMobile.innerHTML = '휴대전화를 확인하세요';
+	}
+}
+
+const fnCheckAgree = () -> {
+	let chkService = document.getElementById('chk-service');
+	agreeCheck = chkService.checked;	
+}
+
+const fnSignup = () => {
+	document.getElementById('frm-signup').addEventListener('submit', (evt) => {
+		fnCheckAgree();
+		if(!emailCheck) {
+			alert('이메일을 확인하세요.');
+			evt.preventDefault();
+			return;
+		} else if(!passwordCheck || !passwordConfirm) {
+			alert('비밀번호를 확인하세요.');
+      evt.preventDefault();
+      return;
+		} else if(!nameCheck) {
+      alert('이름을 확인하세요.');
+      evt.preventDefault();
+      return;
+		} else if(!mobileCheck) {
+      alert('휴대전화를 확인하세요.');
+      evt.preventDefault();
+      return;
+    } else if(!agreeCheck) {
+      alert('서비스 약관에 동의해야 서비스를 이용할 수 있습니다.');
+      evt.preventDefault();
+      return;
+    }
+	})
+}
+
+const fnCheckPassword = () => {
+	// 비밀번호 4 ~ 12자, 영문/숫자/특수문자 중 2개 이상 포함
+	let inpPw = document.getElementById('inp-pw');
+	let validCount = /[A-Za-z]/.test(inpPw.value)      // 영문 포함되어 있으면 true (JavaScript 에서 true 는 숫자 1과 같다.)
+	               + /[0-9]/.test(inpPw.value)         // 숫자 포함되어 있으면 true 
+	               + /[A-Za-z0-9]/.test(inpPw.value);  // 영문/숫자가 아니면 true
+	
+	let passwordLength = inpPw.value.length;
+	passwordCheck = passwordLength >= 4
+	             && passwordLength <= 12
+	             && validCount >= 2;
+	
+	let msgPw = document.getElementById('msg-pw');
+	if(passwordCheck) {
+		msgPw.innerHTML = '사용 가능한 비밀번호입니다.';
+	} else {
+		msgPw.innerHTML = '비밀번호 4 ~ 12자, 영문/숫자/특수문자 중 2개 이상 포함'
+	}
+
+}
+
+const fnConfirmPassword = () => {
+	let inpPw = document.getElementById('inp-pw');
+	let inpPw2 = document.getElementById('inp-pw2');
+	passwordConfirm = (inpPw.value !== '')
+	               && (inpPw.value === inpPw2.value);
+	let msgPw2 = document.getElementById('msg-pw2');
+	if(passwordConfirm) {
+		msgPw2.innerHTML = '';
+	} else {
+		msgPw2.innerHTML = '비밀번호 입력을 확인하세요.';
+	}
+}
+
+
+
 document.getElementById('btn-code').addEventListener('click', fnCheckEmail);
+document.getElementById('inp-pw').addEventListener('keyup', fnCheckPassword);  // 키보드 입력하자마자 한글자한글자 -> keyup // 키보드 입력하고 포커스를 해제하면 -> blur
+document.getElementById('inp-pw2').addEventListener('blur', fnConfirmPassword);
+document.getElementById('inp-name').addEventListener('blur', fnCheckName);
+document.getElementById('inp-mobile').addEventListener('blur', fnCheckMobile);
+
+fnSignup();
 
 /* 데이터의 흐름
  * POST 방식으로 JSON을 보낸다 : @ReqeustBody 로 받을 것. (받는 실제 도구는 MAP) -> 상호 보완해주는 도구가 jaxon.lib
