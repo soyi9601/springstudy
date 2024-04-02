@@ -52,7 +52,8 @@
     
     <!-- Sign In 된 경우 -->
     <c:if test="${sessionScope.user != null}">
-      ${sessionScope.user.name}님 반갑
+      ${sessionScope.user.name}님 반갑습니다.
+      <a href="${contextPath}/user/leave.do">회원탈퇴</a>
     </c:if>
     
     

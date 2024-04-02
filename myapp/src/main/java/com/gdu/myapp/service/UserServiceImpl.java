@@ -5,6 +5,7 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -166,6 +167,7 @@ public class UserServiceImpl implements UserService {
       PrintWriter out = response.getWriter();
       out.println("<script>");
       if(insertCount == 1) {
+        // 기록을 위한 Map 에 저장
         Map<String, Object> map = Map.of("email", email, "pw", pw, "ip", ip);
         
         // 세션에 user 저장하기
@@ -187,8 +189,40 @@ public class UserServiceImpl implements UserService {
 
   @Override
   public void leave(HttpServletRequest request, HttpServletResponse response) {
-    // TODO Auto-generated method stub
 
+    try {      
+      // 세션에 저장된 user 값 확인
+      HttpSession session = request.getSession();
+      UserDto user = (UserDto) session.getAttribute("user");
+      
+      // 세션 만료로 user 정보가 세션에 없을 수 있음
+      if(user == null) {
+        response.sendRedirect(request.getContextPath() + "/main.page");
+      }
+      
+      // 탈퇴 처리
+      int deleteCount = userMapper.deleteUser(user.getUserNo());    // userNo 또는 user 통째로 넘겨서 뺼 수 있음.
+      
+      // 탈퇴 이후 응답 만들기    
+      response.setContentType("text/html; charset=UTF-8");
+      PrintWriter out = response.getWriter();
+      out.println("<script>");
+      if(deleteCount == 1) {
+        out.println("alert('탈퇴 완료했습니다.');");
+        out.println("location.href='" + request.getContextPath() + "/main.page';");
+        // session 초기화 (모든 값을 유효하지 않게 만든다.)
+        session.invalidate();  // SessionStatus 객체의 setComplete() 메소드 호출
+      } else {
+        out.println("alert('탈퇴 실패했습니다.');");
+        out.println("history.back();");
+      }
+      out.println("</script>");
+      out.flush();
+      out.close();
+      } catch (Exception e) {
+      e.printStackTrace();
+    }
+       
   }
   
 
