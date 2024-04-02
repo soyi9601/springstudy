@@ -39,6 +39,11 @@
         <input type="hidden" name="url" value="${url}">  <!-- Model 에 저장 되어있는 건 일회용 저장소 -->
         <button type="submit">Sign In</button>
       </div>
+      <div>
+        <a href="${naverLoginUrl}">
+          <img style="width:100px;" src="${contextPath}/resources/n_image/btnG_아이콘사각.png">
+        </a>      
+      </div>
     </form>
   </div>
     
