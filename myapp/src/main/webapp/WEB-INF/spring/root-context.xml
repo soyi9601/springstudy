@@ -39,10 +39,11 @@
     <constructor-arg ref="sqlSessionFactoryBean"/>
   </bean>
   
+  <!-- mapper 가 계속 등록될 것으로 보아서 살짝 삭제하기
   <bean class="org.mybatis.spring.mapper.MapperFactoryBean">
     <property name="mapperInterface" value="com.gdu.myapp.mapper.UserMapper" />
     <property name="sqlSessionFactory" ref="sqlSessionFactoryBean" />
-  </bean>
+  </bean> -->
   
   <!-- ******************* NameSpaces 체크 꼭 해주기! *********************  -->  
   <!-- 트랜잭션 관리자 등록 -->

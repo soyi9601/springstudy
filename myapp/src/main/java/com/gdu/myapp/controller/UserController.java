@@ -1,7 +1,5 @@
 package com.gdu.myapp.controller;
 
-import java.math.BigInteger;
-import java.security.SecureRandom;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
@@ -15,6 +13,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import com.gdu.myapp.dto.UserDto;
 import com.gdu.myapp.service.UserService;
 
 @RequestMapping("/user")
@@ -34,43 +33,11 @@ public class UserController {
   public String signinPage(HttpServletRequest request
                          , Model model) {
     
-    // Sign In 페이지 이전의 주소가 저장되어 있는 Request Header 의 referer
-    // 블로그를 보고 있다가 로그인을 하면 전에 보고 있던 블로그 화면으로 넘어가야함. 그것을 알아내기 위한 값이 referer
-    String referer = request.getHeader("referer");
+    // Sign In 페이지로 url 또는 referer 넘겨주기 (로그인 후 이동할 경로를 의미함)
+    model.addAttribute("url", userService.getRedirectURLAfterSignin(request));
     
-    // referer 로 돌아가면 안되는 예외 상황 (아이디/비밀번호 찾기, 가입 화면 등)
-    String[] excludeUrls = {"/findId.page", "findPw.page", "/signup.page"};
-    
-    // Sign In 이후 이동할 url
-    // 초기 값을 referer 로 잡으면 main으로 보내고 싶을 때(예외상황) referer을 main으로 덮어씌울 수 있음
-    String url = referer;
-    if(referer != null) {
-      for(String excludeUrl : excludeUrls) {
-        if(referer.contains(excludeUrl)) {
-          url = request.getContextPath() + "/main.page";
-          break;
-        } 
-      }
-      // referer 값이 없을 때
-    } else {
-      url = request.getContextPath() + "/main.page";
-    }
-    
-    // Sign In 페이지로 url 또는 referer 넘겨주기
-    model.addAttribute("url", url);
-    
-    /************************ 네이버 로그인 1 ****************************/
-    String redirectUri = "http://localhost:8080" + request.getContextPath() + "/user/naver/getAccessToken.do";
-    String state = new BigInteger(130, new SecureRandom()).toString();  // 네이버 개발자센터 뒤져보면 code 나와있음
-    
-    StringBuilder builder = new StringBuilder();
-    builder.append("https://nid.naver.com/oauth2.0/authorize");
-    builder.append("?response_type=code");
-    builder.append("&client_id=Kxpn76LYwVERM6YVO8Dj");
-    builder.append("&redirect_uri=" + redirectUri);
-    builder.append("&state=" + state);
-    
-    model.addAttribute("naverLoginUrl", builder.toString());
+    // Sign In 페이지로 naverLoginURL 넘겨주기 (네이버 로그인 요청 주소를 의미함)
+    model.addAttribute("naverLoginURL", userService.getNaverLoginURL(request));
     
     return "user/signin";
   }
@@ -78,6 +45,37 @@ public class UserController {
   @PostMapping("/signin.do")
   public void signin(HttpServletRequest request, HttpServletResponse response) {
     userService.signin(request, response);
+  }
+  
+  @GetMapping("/naver/getAccessToken.do")
+  public String getAccessToken(HttpServletRequest request) {
+    String accessToken = userService.getNaverLoginAccessToken(request);
+    return "redirect:/user/naver/getProfile.do?accessToken=" + accessToken;
+    // return null;
+  }
+  
+  @GetMapping("/naver/getProfile.do")
+  public String getProfile(HttpServletRequest request, Model model) {
+    
+    // 네이버로부터 받은 프로필 정보
+    UserDto naverUser = userService.getNaverLoginProfile(request.getParameter("accessToken"));
+    
+    // 반환 경로
+    String path = null;
+    
+    // 프로필이 DB에 있는지 확인 (있으면 Sign In, 없으면 Sign Up)
+    if(userService.hasUser(naverUser)) {
+      // Sign In
+      userService.naverSignin(request, naverUser);
+      path = "redirect:/main.page";
+    } else {
+      // Sign Up (네이버 가입 화면으로 이동) -> forward
+      model.addAttribute("naverUser", naverUser);
+      path = "user/naver_signup";
+    }
+    
+    return path;
+    
   }
   
   @GetMapping("/signup.page")
@@ -116,6 +114,11 @@ public class UserController {
     // 세션정보필요, HttpServletResponse response 응답을 던져줘야함  
   }
   */
- 
+  
+  @GetMapping("/signout.do")
+  public void signout(HttpServletRequest request, HttpServletResponse response) {
+    userService.signout(request, response);
+  }
+  
   
 }

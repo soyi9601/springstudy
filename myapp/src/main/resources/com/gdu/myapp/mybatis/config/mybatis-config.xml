@@ -10,10 +10,12 @@
   </settings>
   
   <!-- typeAliases -->
+  <!-- Dto는 무조건! 미리 한번에 뭐 만들지 정해서 한번에 다 올려놔야함! -->
   <typeAliases>
     <typeAlias alias="AccessHistoryDto" type="com.gdu.myapp.dto.AccessHistoryDto"/>
     <typeAlias alias="LeaveUserDto" type="com.gdu.myapp.dto.LeaveUserDto"/>
     <typeAlias alias="UserDto" type="com.gdu.myapp.dto.UserDto"/>
+    <typeAlias alias="BbsDto" type="com.gdu.myapp.dto.BbsDto"/>
   </typeAliases>
   
 </configuration>

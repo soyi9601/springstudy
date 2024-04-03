@@ -1,0 +1,28 @@
+@charset "UTF-8";
+
+.main-wrap{
+  width: 1280px;
+  min-height: 600px; 
+  margin: 20px auto;
+}
+
+
+/* footer */
+.footer {
+  overflow: hidden;
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+  background: #888;
+}
+.footer div {
+  float: left;
+  width: 50%;
+}
+.footer .right ul {
+  padding: 0 30px;
+}
+.footer .right ul li {
+  border-bottom: 1px solid yellow;
+  margin-bottom: 10px;
+}
