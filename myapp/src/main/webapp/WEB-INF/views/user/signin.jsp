@@ -5,7 +5,7 @@
   <jsp:param value="Sign In" name="title" />
 </jsp:include>
 
-  <h1>Sign In</h1>
+  <h1 class="title">Sign In</h1>
   
   <div>
     <form method="POST"

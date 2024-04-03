@@ -5,7 +5,7 @@
   <jsp:param value="Sign Up" name="title" />
 </jsp:include>
 
-  <h1>Sign Up</h1>
+  <h1 class="title">Sign Up</h1>
     
   <form method="POST"
         action="${contextPath}/user/signup.do"

@@ -33,6 +33,7 @@
 <!-- include custom css/js -->
 <link rel="stylesheet" href="${contextPath}/resources/css/init.css?dt=${dt}">
 <link rel="stylesheet" href="${contextPath}/resources/css/header.css?dt=${dt}">
+<link rel="stylesheet" href="${contextPath}/resources/css/style.css?dt=${dt}">
 </head>
 <body>
 
@@ -56,8 +57,8 @@
     
     <div class="gnb-wrap">
       <ul class="gnb">
+        <li><a href="${contextPath}/bbs/list.do">계층형게시판</a></li>
         <li><a href="${contextPath}/">댓글형게시판</a></li>
-        <li><a href="${contextPath}/">계층형게시판</a></li>
         <li><a href="${contextPath}/">첨부형게시판</a></li>
         <li><a href="${contextPath}/">마이페이지</a></li>
       </ul>

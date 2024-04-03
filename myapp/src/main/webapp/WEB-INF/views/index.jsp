@@ -3,6 +3,6 @@
 
 <jsp:include page="./layout/header.jsp" />
 
-  <h1>Welcome to myapp</h1>
+  <h1 class="title">Welcome to myapp</h1>
 
 <%@ include file="./layout/footer.jsp" %>
