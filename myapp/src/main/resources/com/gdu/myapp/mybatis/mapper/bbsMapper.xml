@@ -4,6 +4,29 @@
   "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.gdu.myapp.mapper.BbsMapper">
   
+  <!-- 원글삽입 -->
+  <insert id="insertBbs"
+          parameterType="BbsDto">
+    INSERT INTO BBS_T (
+        BBS_NO
+      , CONTENTS
+      , USER_NO
+      , CREATE_DT
+      , STATE
+      , DEPTH
+      , GROUP_NO
+      , GROUP_ORDER
+    ) VALUES (
+        BBS_SEQ.NEXTVAL
+      , #{contents}
+      , #{user.userNo}    <!-- user 안에 있는 userNo -->
+      , CURRENT_DATE
+      , 1
+      , 0
+      , BBS_SEQ.CURRVAL   <!-- CURRENT VALUE : 뽑아놓은 번호 // NEXTVAL 을 쓰면 안되고 첫번째에 넣어줬던 그 번호를 재사용하기. -->
+      , 0
+    )
+  </insert>
   
   
 </mapper>
