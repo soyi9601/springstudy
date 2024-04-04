@@ -33,7 +33,13 @@ public class BbsController {
   
   @PostMapping("/register.do")
   public String register(HttpServletRequest request, RedirectAttributes redirectAttributes) {
-    redirectAttributes.addFlashAttribute("insertCount", bbsService.registerBbs(request));
+    redirectAttributes.addFlashAttribute("insertBbsCount", bbsService.registerBbs(request));
+    return "redirect:/bbs/list.do";
+  }
+  
+  @PostMapping("/registerReply.do")
+  public String registerReply(HttpServletRequest request, RedirectAttributes redirectAttributes) {
+    redirectAttributes.addFlashAttribute("insertReplyCount", bbsService.registerReply(request));
     return "redirect:/bbs/list.do";
   }
   

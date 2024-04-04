@@ -63,6 +63,44 @@
      WHERE RN BETWEEN #{begin} AND #{end}
   </select>
   
+  <!-- 답글 삽입 전 기존 답글들의 GROUP_ORDER 업데이트 -->
+  <update id="updateGroupOrder"
+          parameterType="BbsDto">   <!-- BbsDto 는 원글을 의미한다. -->
+    UPDATE BBS_T
+       SET GROUP_ORDER = GROUP_ORDER + 1
+     WHERE GROUP_NO = #{groupNo}
+       AND GROUP_ORDER > #{groupOrder}  
+  </update>
   
+  <!-- 답글 삽입 -->
+  <insert id="insertReply"
+          parameterType="BbsDto">   <!-- BbsDto 는 답글을 의미함. -->
+    INSERT INTO BBS_T (
+        BBS_NO
+      , CONTENTS
+      , USER_NO
+      , CREATE_DT
+      , STATE
+      , DEPTH
+      , GROUP_NO
+      , GROUP_ORDER
+    ) VALUES (
+        BBS_SEQ.NEXTVAL
+      , #{contents}
+      , #{user.userNo}   
+      , CURRENT_DATE
+      , 1
+      , #{depth}
+      , #{groupNo}
+      , #{groupOrder}
+    )
+  </insert>
 </mapper>
+
+
+
+
+
+
+
 

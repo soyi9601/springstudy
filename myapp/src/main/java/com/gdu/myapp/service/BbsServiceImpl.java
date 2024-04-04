@@ -88,8 +88,41 @@ public class BbsServiceImpl implements BbsService {
 
   @Override
   public int registerReply(HttpServletRequest request) {
-    // TODO Auto-generated method stub
-    return 0;
+    
+    // 요청 파라미터
+    // 답글 정보 : userNo, contents
+    // 원글 정보 : depth, groupNo, groupOrder
+    int userNo = Integer.parseInt(request.getParameter("userNo"));
+    String contents = request.getParameter("contents");
+    int depth = Integer.parseInt(request.getParameter("depth"));
+    int groupNo = Integer.parseInt(request.getParameter("groupNo"));
+    int groupOrder = Integer.parseInt(request.getParameter("groupOrder"));
+    
+    // 원글 BbsDto 객체 생성
+    BbsDto bbs = BbsDto.builder()
+                    .depth(depth)
+                    .groupNo(groupNo)
+                    .groupOrder(groupOrder)
+                  .build();    
+    
+    // 기존 답글들의 groupOrder 업데이트
+    int updateCount = bbsMapper.updateGroupOrder(bbs);    // 업데이트 한 행의 개수가 나온다. 몇개가 나올지 모른다.
+    
+    // 답글 BbsDto 객체 생성
+    UserDto user = new UserDto();
+    user.setUserNo(userNo);
+    BbsDto reply = BbsDto.builder()
+                      .user(user)
+                      .contents(contents)
+                      .depth(depth + 1)
+                      .groupNo(groupNo)
+                      .groupOrder(groupOrder + 1)
+                    .build();
+    
+    // 새 답글의 추가
+    // bbsMapper.insertReply(reply);     // 삽입이라서 성공하면 1이 나올 것.
+    
+    return bbsMapper.insertReply(reply);
   }
 
   @Override
