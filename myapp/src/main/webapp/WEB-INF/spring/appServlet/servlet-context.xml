@@ -23,6 +23,12 @@
 	
 	<context:component-scan base-package="com.gdu.myapp" />
 	
-	
+	<!-- 인터셉터 등록 : 로그인이 되어있지 않으면 작성하러 가기에서 로그인을 해야한다고 알려주면서 동작하지 않음. -->
+  <interceptors>
+    <interceptor>
+      <mapping path="/bbs/write.page"/>
+      <beans:bean class="com.gdu.myapp.interceptor.RequiredSigninInterceptor" />
+    </interceptor>
+  </interceptors>
 	
 </beans:beans>

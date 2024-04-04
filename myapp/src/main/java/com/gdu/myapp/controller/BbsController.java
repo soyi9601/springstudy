@@ -5,7 +5,9 @@ import javax.servlet.http.HttpServletRequest;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.gdu.myapp.service.BbsService;
 
@@ -28,5 +30,14 @@ public class BbsController {
   public String writerPage() {
     return "bbs/write";
   }
+  
+  @PostMapping("/register.do")
+  public String register(HttpServletRequest request, RedirectAttributes redirectAttributes) {
+    redirectAttributes.addFlashAttribute("insertCount", bbsService.registerBbs(request));
+    return "redirect:/bbs/list.do";
+  }
+  
+  
+  
   
 }
