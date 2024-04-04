@@ -1,5 +1,17 @@
 @charset "UTF-8";
 
+.header-wrap div {
+  width: 1280px;
+  margin: 0 auto;
+  padding: 15px 0;
+}
+
+.user-wrap {background: #f3f3f3;}
+
+.gnb-wrap .gnb {overflow: hidden; padding: 0; margin: 0;}
+.gnb-wrap .gnb li {float: left; width: 25%; padding: 5px 0;}
+
+
 .main-wrap{
   width: 1280px;
   min-height: 600px; 

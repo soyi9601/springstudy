@@ -11,7 +11,7 @@
   
   <form id="frm-bbs-register"
         method="POST"
-        action="${contextPath}/register.do">
+        action="${contextPath}/bbs/register.do">
     
     <div>
       <span>작성자</span>
@@ -19,7 +19,7 @@
     </div>
     
     <div>
-      <textarea id="contents" name="contents" placeholder="내용입력 ㄱㄱ"></textarea>
+      <textarea id="contents" name="contents" placeholder="내용 입력하세요"></textarea>
     </div>
     
     <div>

@@ -4,6 +4,22 @@
   "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.gdu.myapp.mapper.BbsMapper">
   
+  <!-- BbsDto 의 구조를 이용해 BbsMap 을 만들어서 resultType 대신 resultMap 으로 사용 -->
+  <!-- resultMap 은 JOIN 할 때 꼭 써라!! -->
+  <resultMap type="BbsDto" id="BbsMap">
+    <id     property="bbsNo"      column="BBS_NO" />   <!-- PK는 ID로 작성 -->
+    <result property="contents"   column="CONTENTS" />
+    <result property="createDt"   column="CREATE_DT" />
+    <result property="state"      column="STATE" />
+    <result property="depth"      column="DEPTH" />
+    <result property="groupNo"    column="GROUP_NO" />
+    <result property="groupOrder" column="GROUP_ORDER" />
+    <association property="user" javaType="UserDto">
+      <id     property="userNo" column="USER_NO" />
+      <result property="email"  column="EMAIL" />
+    </association>
+  </resultMap>
+  
   <!-- 원글삽입 -->
   <insert id="insertBbs"
           parameterType="BbsDto">
@@ -27,6 +43,25 @@
       , 0
     )
   </insert>
+  
+  <!-- 전체 BBS 게시글 수 -->
+  <select id="getBbsCount"
+          resultType="int">
+    SELECT COUNT(*)
+      FROM BBS_T
+  </select>
+  
+  <!-- BBS 게시글 목록 -->
+  <select id="getBbsList"
+          parameterType="Map"
+          resultMap="BbsMap">
+    <!-- GROUP_NO 의 내림차순으로 하고, GROUP_ORDER 의 오름 차순으로 정렬. -->
+    SELECT BBS_NO, CONTENTS, USER_NO, EMAIL, CREATE_DT, STATE, DEPTH, GROUP_NO, GROUP_ORDER
+      FROM (SELECT ROW_NUMBER() OVER(ORDER BY GROUP_NO DESC, GROUP_ORDER ASC) AS RN, B.BBS_NO, B.CONTENTS, U.USER_NO, U.EMAIL, B.CREATE_DT, B.STATE, B.DEPTH, B.GROUP_NO, B.GROUP_ORDER
+              FROM USER_T U INNER JOIN BBS_T B
+                ON U.USER_NO = B.USER_NO)
+     WHERE RN BETWEEN #{begin} AND #{end}
+  </select>
   
   
 </mapper>

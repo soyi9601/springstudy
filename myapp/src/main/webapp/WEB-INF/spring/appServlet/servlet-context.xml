@@ -29,6 +29,13 @@
       <mapping path="/bbs/write.page"/>
       <beans:bean class="com.gdu.myapp.interceptor.RequiredSigninInterceptor" />
     </interceptor>
+    
+    <interceptor>
+      <mapping path="/user/signin.page"/>
+      <mapping path="/user/signup.page"/>
+      <beans:bean class="com.gdu.myapp.interceptor.RequiredSignoutInterceptor" />
+    </interceptor>
+    
   </interceptors>
 	
 </beans:beans>
