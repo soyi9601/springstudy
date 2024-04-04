@@ -95,6 +95,14 @@
       , #{groupOrder}
     )
   </insert>
+  
+  <!-- BBS 게시글 삭제 -->
+  <update id="removeBbs">
+    UPDATE BBS_T
+      SET STATE = 0
+     WHERE BBS_NO = #{bbsNo}
+  </update>
+  
 </mapper>
 
 

@@ -93,7 +93,7 @@ public class BbsServiceImpl implements BbsService {
     // 답글 정보 : userNo, contents
     // 원글 정보 : depth, groupNo, groupOrder
     int userNo = Integer.parseInt(request.getParameter("userNo"));
-    String contents = request.getParameter("contents");
+    String contents = MySecurityUtils.getPreventXss(request.getParameter("contents"));
     int depth = Integer.parseInt(request.getParameter("depth"));
     int groupNo = Integer.parseInt(request.getParameter("groupNo"));
     int groupOrder = Integer.parseInt(request.getParameter("groupOrder"));
@@ -106,7 +106,7 @@ public class BbsServiceImpl implements BbsService {
                   .build();    
     
     // 기존 답글들의 groupOrder 업데이트
-    int updateCount = bbsMapper.updateGroupOrder(bbs);    // 업데이트 한 행의 개수가 나온다. 몇개가 나올지 모른다.
+    bbsMapper.updateGroupOrder(bbs);    // int UpdateCount : 업데이트 한 행의 개수가 나온다. 몇개가 나올지 모른다. 의미 없어서 적지 않음.
     
     // 답글 BbsDto 객체 생성
     UserDto user = new UserDto();
@@ -127,8 +127,7 @@ public class BbsServiceImpl implements BbsService {
 
   @Override
   public int removeBbs(int bbsNo) {
-    // TODO Auto-generated method stub
-    return 0;
+    return bbsMapper.removeBbs(bbsNo);
   }
 
   @Override

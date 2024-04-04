@@ -33,7 +33,10 @@
               ${bbs.contents}
               <c:if test="${sessionScope.user.email != bbs.user.email}"><button type="button" class="btn-reply">답글</button></c:if>
               <!-- <c:if test="${sessionScope.user.userNo != bbs.user.userNo}"><button type="button" class="btn-reply">답글</button></c:if> -->              
-              <c:if test="${sessionScope.user.email == bbs.user.email}"><button type="button" class="btn-remove">삭제</button></c:if>
+              <c:if test="${sessionScope.user.email == bbs.user.email}">
+                <button type="button" class="btn-remove">삭제</button>
+                <input type="hidden" value="${bbs.bbsNo}">
+              </c:if>
             </td>
             <td>
               <fmt:formatDate value="${bbs.createDt}" pattern="yyyy.MM.dd. HH:mm:ss" />
@@ -53,7 +56,7 @@
               </div>
               
               <div>
-                <textarea id="contents" name="contents" placeholder="답글을 입력하세요 입력하세요"></textarea>
+                <textarea class="contents" name="contents" placeholder="답글을 입력하세요 입력하세요"></textarea>
               </div>
               
               <div>
@@ -74,8 +77,27 @@
   
   <script>
   
-  const fnBlind = () => {
+  const fnBtnRemove = () => {
+	  $('.btn-remove').on('click', (evt) => {
+		  if(confirm('게시글 삭제할까요?')) {
+			  location.href = '${contextPath}/bbs/removeBbs.do?bbsNo=' + $(evt.target).next().val();
+		  }
+	  })
+  }
+  
+  const fnCheckSignin = () => {
+	  if('${sessionScope.user}' === '') {
+		  if(confirm('Sign In 이 필요한 기능입니다. Sign In 할까요?')) {
+			  location.href = '${contextPath}/user/signin.page';
+		  }
+	  }
+  }
+  
+  const fnBtnReply = () => {
 	  $('.btn-reply').on('click', (evt) => {
+		  // Sign In 체크
+		  fnCheckSignin();
+		  // 답글 작성 화면 조작
 		  let write = $(evt.target).closest('.bbs').next();
 		  if(write.hasClass('blind')) {
 			  $('.write').addClass('blind');   // 모든 답글 작성 화면 닫은 뒤
@@ -108,7 +130,9 @@
       }
     }
   
-  fnBlind();
+  $('.contents').on('click', fnCheckSignin);
+  fnBtnRemove();
+  fnBtnReply();
   fnInsertBbsCount();
   fnInsertReplyCount();
   </script>
