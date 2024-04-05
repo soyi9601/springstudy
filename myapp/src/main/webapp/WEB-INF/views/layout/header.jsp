@@ -26,9 +26,9 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.min.js"></script>
 
 <!-- include summernote css/js -->
-<%-- <link rel="stylesheet" href="${contextPath}/resources/summernote-0.8.18-dist/summernote.min.css">
+<link rel="stylesheet" href="${contextPath}/resources/summernote-0.8.18-dist/summernote.min.css">
 <script src="${contextPath}/resources/summernote-0.8.18-dist/summernote.min.js"></script>
-<script src="${contextPath}/resources/summernote-0.8.18-dist/lang/summernote-ko-KR.min.js"></script> --%>
+<script src="${contextPath}/resources/summernote-0.8.18-dist/lang/summernote-ko-KR.min.js"></script>
 
 <!-- include custom css/js -->
 <link rel="stylesheet" href="${contextPath}/resources/css/init.css?dt=${dt}">
@@ -58,7 +58,7 @@
     <div class="gnb-wrap">
       <ul class="gnb">
         <li><a href="${contextPath}/bbs/list.do">계층형게시판</a></li>
-        <li><a href="${contextPath}/">댓글형게시판</a></li>
+        <li><a href="${contextPath}/blog/list.do">댓글형게시판</a></li>
         <li><a href="${contextPath}/">첨부형게시판</a></li>
         <li><a href="${contextPath}/">마이페이지</a></li>
       </ul>
