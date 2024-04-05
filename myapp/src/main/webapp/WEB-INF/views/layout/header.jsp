@@ -64,6 +64,8 @@
       </ul>
     </div>
     
+    <div>현재 sessionId : <%=session.getId()%></div>
+    
   </div>
 
   <div class="main-wrap">

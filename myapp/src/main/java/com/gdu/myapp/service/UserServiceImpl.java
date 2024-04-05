@@ -117,11 +117,13 @@ public class UserServiceImpl implements UserService {
       out.println("<script>");
       if(insertCount == 1) {
         // 기록을 위한 Map 에 저장
-        Map<String, Object> map = Map.of("email", email, "pw", pw, "ip", ip);
+        Map<String, Object> params = Map.of("email", email, "pw", pw, "ip", ip
+                                       , "userAgent", request.getHeader("User-Agent")
+                                       , "sessionId", request.getSession().getId());
         
         // 세션에 user 저장하기
-        request.getSession().setAttribute("user", userMapper.getUserByMap(map));
-        userMapper.insertAccessHistory(map);
+        request.getSession().setAttribute("user", userMapper.getUserByMap(params));
+        userMapper.insertAccessHistory(params);
         
         out.println("location.href='" + request.getContextPath() + "/main.page'");
       } else {
@@ -215,10 +217,15 @@ public class UserServiceImpl implements UserService {
       // 접속 IP (접속 기록을 남길 때)
       String ip = request.getRemoteAddr();    // IP 저장! *********
       
+      // 접속 수단 (요청 헤더의 USer-Agent 값)
+      String userAgent = request.getHeader("User-Agent");
+      
       // DB로 보낼 정보 (email/pw -> USER_T, email/IP -> ACCESS_HISTORY_T) *우리는 이것을 Map 에 담기로 함.
       Map<String, Object> params = Map.of("email", email
                                         , "pw", pw
-                                        , "ip", ip);
+                                        , "ip", ip
+                                        , "userAgent", userAgent
+                                        , "sessionId", request.getSession().getId());
       
       // email/pw 가 일치하는 회원 정보 가져오기
       UserDto user = userMapper.getUserByMap(params);
@@ -227,9 +234,14 @@ public class UserServiceImpl implements UserService {
       if(user != null) {
         // 접속 기록 ACCESS_HISTORY_T 에 남기기
         userMapper.insertAccessHistory(params); 
+        
         // ****** 로그인의 기본 원리는 session 이라는 저장소(데이터바인딩 영역)에 정보를 올려주는 것. "user" 이런 정보는 모든 팀원들이 공유하고 있어야 할 정보
-        // (브라우저 닫기 전까지 정보가 유지되는 공간, 기본 30분 정보 유지)
-        request.getSession().setAttribute("user", user);
+        // 회원정보를 세션에 저장(브라우저 닫기 전까지 정보가 유지되는 공간, 기본 30분 정보 유지)
+        HttpSession session = request.getSession();
+        session.setAttribute("user", user);
+        // session.setMaxInactiveInterval(10); // 세션 유지 시간 10초 설정
+        
+        
         // Sign In 후 페이지 이동
         response.sendRedirect(request.getParameter("url"));
       
@@ -253,21 +265,18 @@ public class UserServiceImpl implements UserService {
   @Override
   public void signout(HttpServletRequest request, HttpServletResponse response) {
     
-    try {
+      try {
       
+      // Sign Out 기록 남기기
       HttpSession session = request.getSession();
+      String sessionId = session.getId(); 
+      userMapper.updateAccessHistory(sessionId);
       
-      response.setContentType("text/html; charset=UTF-8");
-      PrintWriter out = response.getWriter();
-      out.println("<script>");
-      if(session != null) {
-        out.println("alert('로그아웃했습니다');");
-        session.invalidate();
-        response.sendRedirect(request.getContextPath() + "/main.page");
-      } else {
-        out.println("alert('로그아웃 실패');");
-      }
-      out.println("</script>");
+      // 세션에 저장된 모든 정보 초기화
+      session.invalidate();
+      
+      // 메인 페이지로 이동
+      response.sendRedirect(request.getContextPath() + "/main.page");
       
     } catch (Exception e) {
       e.printStackTrace();

@@ -1,5 +1,6 @@
 package com.gdu.myapp.service;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -65,7 +66,7 @@ public class BbsServiceImpl implements BbsService {
     myPageUtils.setPaging(total, display, page);
     
     // DB 로 보낼 Map 생성
-    Map<String, Object>  map = Map.of("begin", myPageUtils.getBegin()
+    Map<String, Object> map = Map.of("begin", myPageUtils.getBegin()
                                     , "end", myPageUtils.getEnd());
     
     // DB 에서 목록 가져오기
@@ -132,7 +133,45 @@ public class BbsServiceImpl implements BbsService {
 
   @Override
   public void loadBbsSearchList(HttpServletRequest request, Model model) {
-    // TODO Auto-generated method stub
+    
+    // 요청 파라미터
+    String column = request.getParameter("column");
+    String query = request.getParameter("query");
+    
+    // 검색 데이터 개수를 구할 때 사용할 Map
+    Map<String, Object> map = new HashMap<String, Object>();
+    map.put("column", column);
+    map.put("query", query);
+    
+    
+    // 검색 데이터 개수 구하기
+    int total = bbsMapper.getSearchCount(map);
+    
+    // 한 페이지에 표시할 검색 데이터 개수
+    int display = 20;
+    
+    // 현재 페이지 번호
+    Optional<String> opt = Optional.ofNullable(request.getParameter("page"));
+    int page = Integer.parseInt(opt.orElse("1"));
+    
+    // 페이징 처리에 필요한 처리
+    myPageUtils.setPaging(total, display, page);
+    
+    // 검색 목록을 가져오기 위해서 기존 Map 에 begin 과 end 를 추가
+    map.put("begin", myPageUtils.getBegin());
+    map.put("end", myPageUtils.getEnd());
+    
+    // DB 에서 목록 가져오기
+    List<BbsDto> bbsSearchList = bbsMapper.getSearchList(map);
+    
+    model.addAttribute("beginNo", total - (page - 1) * display);
+    model.addAttribute("bbsSearchList", bbsSearchList);
+    model.addAttribute("paging", myPageUtils.getPaging(request.getContextPath() + "/bbs/search.do"
+                                                     , ""
+                                                     , display
+                                                     , "column=" + column + "&query=" + query));
+    // 메소드 오버로딩 : 같은 이름의 메소드는 여러개여도 된다. 단 파라미터는 다르게 작성해야한다.
+    
 
   }
 

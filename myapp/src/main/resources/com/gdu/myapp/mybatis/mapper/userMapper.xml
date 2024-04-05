@@ -22,16 +22,26 @@
         ACCESS_HISTORY_NO
       , EMAIL
       , IP
+      , USER_AGENT
+      , SESSION_ID
       , SIGNIN_DT
       , SIGNOUT_DT
     ) VALUES (
       ACCESS_HISTORY_SEQ.NEXTVAL
       , #{email}
       , #{ip}
+      , #{userAgent}
+      , #{sessionId}
       , CURRENT_DATE
       , NULL
     )
   </insert>
+  <!-- HttpSessionListener : session이 열렸는지 닫혔는지 계속 쳐다보는 아이 -->
+  <update id="updateAccessHistory">
+    UPDATE ACCESS_HISTORY_T
+       SET SIGNOUT_DT = CURRENT_DATE
+     WHERE SESSION_ID = #{sessionId} 
+  </update>
   
   <select id="getLeaveUserByMap"
           parameterType="Map"

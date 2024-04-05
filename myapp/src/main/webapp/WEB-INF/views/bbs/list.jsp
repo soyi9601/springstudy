@@ -11,6 +11,20 @@
   
   <a href="${contextPath}/bbs/write.page">작성하러 가기</a>
   
+  <div>
+    <form method="GET"
+          action="${contextPath}/bbs/search.do">
+      <div>
+        <select name="column">
+          <option value="EMAIL">작성자</option>
+          <option value="CONTENTS">내용</option>
+        </select>
+        <input type="text" name="query" placeholder="검색어 입력" />
+        <button type="submit">검색</button>
+      </div>
+    </form>
+  </div>
+  
   <table border="1">
     <thead>
       <tr>
