@@ -34,7 +34,7 @@
     <c:if test="${not empty sessionScope.user}">
       <input type="hidden" name="userNo" value="${sessionScope.user.userNo}">
     </c:if>
-    <button id="btn-comment-register"></button>    
+    <button type="button" id="btn-comment-register">답글 작성</button>    
   </form>
   
   <hr>
@@ -53,7 +53,10 @@
 			  }
 		  } else {
 			  $.ajax({
-				  
+				  // 요청 (삽입할 때는 고민하지 말고 POST)
+				  type: 'POST',
+				  url: '${contextPath}/blog/registerComment.do',
+				  data: $('#frm-comment').serialize()   // <form> 내부의 모든 입력을 파라미터 형식으로 보낼 때 사용, 입력 요소들은 name 속성을 가지고 있어야함. 
 			  })
 		  }
 	  })

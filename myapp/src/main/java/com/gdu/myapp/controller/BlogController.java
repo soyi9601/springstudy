@@ -69,5 +69,13 @@ public class BlogController {
     return "/blog/detail";
   }
   
+  @PostMapping(value="/registerComment.do", produces="application/json")
+  public ResponseEntity<Map<String, Object>> registerComment(HttpServletRequest request) {
+    System.out.println(request.getParameter("contents"));
+    System.out.println(request.getParameter("blogNo"));
+    System.out.println(request.getParameter("userNo"));
+    return new ResponseEntity<>(null);
+  }
+  
   
 }
