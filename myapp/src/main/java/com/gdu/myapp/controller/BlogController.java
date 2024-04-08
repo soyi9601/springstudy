@@ -53,7 +53,12 @@ public class BlogController {
   @PostMapping("/register.do")
   public String register(HttpServletRequest request, RedirectAttributes redirectAttributes) {
     redirectAttributes.addFlashAttribute("insertCount", blogService.registerBlog(request));
-    return "redirect:/blog/list.do";
+    return "redirect:/blog/list.page";
+  }
+  
+  @GetMapping(value="/getBlogList.do", produces="application/json")
+  public ResponseEntity<Map<String, Object>> getBlogList(HttpServletRequest request) {
+    return blogService.getBlogList(request);
   }
   
   

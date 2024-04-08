@@ -28,9 +28,13 @@
 <script src="${contextPath}/resources/summernote-0.8.18-dist/summernote.min.js"></script>
 <script src="${contextPath}/resources/summernote-0.8.18-dist/lang/summernote-ko-KR.min.js"></script>
 
+<!-- include moment.js -->
+<script src="${contextPath}/resources/moment/moment-with-locales.min.js"></script>
+
 <!-- include custom css/js -->
 <link rel="stylesheet" href="${contextPath}/resources/css/init.css?dt=${dt}">
 <link rel="stylesheet" href="${contextPath}/resources/css/header.css?dt=${dt}">
+<link rel="stylesheet" href="${contextPath}/resources/css/style.css?dt=${dt}">
 
 </head>
 <body>
