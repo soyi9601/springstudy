@@ -2,6 +2,8 @@ package com.gdu.myapp.controller;
 
 import java.util.Map;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -9,6 +11,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.gdu.myapp.service.BlogService;
 
@@ -21,7 +24,10 @@ public class BlogController {
   
   private final BlogService blogService;
   
-  @GetMapping("/list.do")
+  // 평소와 다른 형태의 List : 평소엔 blogService 를 호출해서 사용했음. -> 단순 페이지 이동(아무것도 가져가지않고)
+  // ajax 을 이용하여 가져올 예정
+  // 빈페이지로 감 -> ajax(javascript) 로 최초 목록을 뿌려준다.
+  @GetMapping("/list.page")
   public String list() {
     return "blog/list";
   }
@@ -35,7 +41,6 @@ public class BlogController {
   public ResponseEntity<Map<String, Object>> summernoteImageUpload(@RequestParam("image") MultipartFile multipartFile) {
     return blogService.summernoteImageUpload(multipartFile);
   }
-  
   /*
    * @PostMapping(value="/summernote/imageUpload.do", produces="application/json")
    * // form에 Requestparam 하나 들어있다. // requestParam을 받을 때 multipartFile로 받아라!!! //
@@ -44,5 +49,12 @@ public class BlogController {
    * summernoteImageUpload(@RequestParam("image") MultipartFile multipartFile) {
    * return blogService.summernoteImageUpload(multipartFile); }
    */
+  
+  @PostMapping("/register.do")
+  public String register(HttpServletRequest request, RedirectAttributes redirectAttributes) {
+    redirectAttributes.addFlashAttribute("insertCount", blogService.registerBlog(request));
+    return "redirect:/blog/list.do";
+  }
+  
   
 }
