@@ -6,6 +6,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -59,6 +60,13 @@ public class BlogController {
   @GetMapping(value="/getBlogList.do", produces="application/json")
   public ResponseEntity<Map<String, Object>> getBlogList(HttpServletRequest request) {
     return blogService.getBlogList(request);
+  }
+  
+  @GetMapping("/detail.do")
+  // 번호 한개 blogNo, Model 에 blog 내용을 저장을 해서 넘겨줘야함.
+  public String detail(@RequestParam int blogNo, Model model) {
+    model.addAttribute("blog", blogService.getBlogByNo(blogNo));
+    return "/blog/detail";
   }
   
   

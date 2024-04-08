@@ -4,6 +4,7 @@ import java.io.File;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -119,6 +120,12 @@ public class BlogServiceImpl implements BlogService {
                                      , "totalPage", myPageUtils.getTotalPage())
                                      , HttpStatus.OK);
   }
+  
+  @Override
+  public BlogDto getBlogByNo(int blogNo) {
+    return blogMapper.getBlogByNo(blogNo);
+  }
+  
 
 }
 

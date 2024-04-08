@@ -55,5 +55,15 @@
                 ON U.USER_NO = B.USER_NO)
      WHERE RN BETWEEN #{begin} AND #{end}
   </select>
+  
+  <!-- Map 이나 Dto 가 전달될 때는 parameterType 이 꼭 전달 되는데 일반 변수는 적지 않아도 됨 -->
+  <select id="getBlogByNo"
+          resultMap="BlogMap">
+    SELECT B.BLOG_NO, B.TITLE, B.CONTENTS, B.HIT, B.CREATE_DT, B.MODIFY_DT
+         , U.USER_NO, U.EMAIL
+      FROM USER_T U INNER JOIN BLOG_T B
+        ON U.USER_NO = B.USER_NO
+     WHERE B.BLOG_NO = #{blogNo}
+  </select>
 
 </mapper>

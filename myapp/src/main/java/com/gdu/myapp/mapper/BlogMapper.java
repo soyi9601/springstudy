@@ -12,4 +12,5 @@ public interface BlogMapper {
   int insertBlog(BlogDto blog);
   int getBlogCount();
   List<BlogDto> getBlogList(Map<String, Object> map);
+  BlogDto getBlogByNo(int blogNo);
 }
