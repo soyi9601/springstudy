@@ -27,7 +27,8 @@
     </div> 
     
   <hr>
-    
+  
+  <!-- 댓글 작성 창 -->
   <form id="frm-comment">
     <textarea id="contents" name="contents"></textarea>
     <input type="hidden" name="blogNo" value="${blog.blogNo}">
@@ -39,7 +40,9 @@
   
   <hr>
   
+  <!-- 댓글 목록 -->
   <div id="comment-list"></div>
+  <div id="paging"></div>
   
 <script>
 
@@ -65,6 +68,7 @@
 				  if(resData.insertCount === 1) {
 					  alert('댓글이 등록되었습니다.');
 					  $('#contents').val('');
+					  fnCommentList();
 					  // 댓글 목록 보여주는 함수 호출
 				  } else {
 					  alert('댓글 등록이 실패했습니다.');
@@ -77,8 +81,64 @@
 	  })
   }
   
+  // 전역 변수
+  var page = 1;
+  
+  const fnCommentList = () => {
+	  $.ajax({
+		  type: 'get',
+		  url: '${contextPath}/blog/comment/list.do',
+		  data: 'blogNo=${blog.blogNo}&page=' + page,
+		  // 응답
+		  dataType: 'json',
+		  success: (resData) => {   // resData = {"commentList": [], "paging": "< 1 2 3 4 5 >"}
+			  // 변수 저장
+			  let commentList = $('#comment-list');
+			  let paging = $('#paging');
+			  // 초기화 (댓글 리스트 + 페이징)
+			  commentList.empty();
+			  paging.empty();
+			  if(resData.commentList.length === 0) {
+				  commentList.append('<div>첫 번째 댓글의 주인공이 되어보세요.</div>');
+				  paging.empty();
+				  return;
+			  } 
+			  $.each(resData.commentList, (i, comment) => {
+				  let str = '';
+				  // 댓글은 들여쓰기 (댓글 여는 div)
+				  if(comment.depth === 0) {
+					  str += '<div>';
+				  } else {
+					  str += '<div style="paggin-left: 32px;">';
+				  }
+				  // 댓글 내용 표시
+				  str += '<span>';
+				  str +=  comment.user.email;
+				  str += '(' + moment(comment.createDt).format('YYYY.MM.DD.') + ')';
+				  str += '</span>';
+				  str += '<div>' + comment.contents + '</div>';
+				  // 댓글 닫는 <div>
+				  str += '</div>';
+				  // 목록에 댓글 추가
+				  commentList.append(str);
+			  })
+			  // 페이징표시
+			  paging.append(resData.paging);
+		  },
+		  error: (jqXHR) => {
+			  alert(jqXHR.statusText + '(' + jqXHR.status + ')');
+		  }
+	  })
+  }
+  
+  const fnPaging = (p) => {
+	  page = p;
+	  fnCommentList();
+  }
+  
   $('#contents').on('click', fnCheckSignin);
   fnRegisterComment();
+  fnCommentList();
 
 </script>
 

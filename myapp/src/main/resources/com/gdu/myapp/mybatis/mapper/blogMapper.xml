@@ -17,6 +17,19 @@
       <result property="email"  column="EMAIL"/>
     </association>
   </resultMap>
+  
+  <resultMap type="CommentDto" id="CommentMap">
+    <id     property="commentNo" column="COMMENT_NO" />
+    <result property="depth"     column="DEPTH" />
+    <result property="groupNo"   column="GROUP_NO" />
+    <result property="blogNo"    column="BLOG_NO" />
+    <result property="contents"  column="CONTENTS" />
+    <result property="createDt"  column="CREATE_DT" />
+    <association property="user" javaType="UserDto">
+      <id     property="userNo" column="USER_NO"/>
+      <result property="email"  column="EMAIL"/>
+    </association>
+  </resultMap>
 
   <insert id="insertBlog"
           parameterType="BlogDto">
@@ -86,8 +99,27 @@
       , #{user.userNo}
       , #{blogNo}
     )
-  
-  
   </insert>
+  
+  <select id="getCommentCount"
+          resultType="int">
+  SELECT COUNT(*)
+    FROM COMMENT_T
+   WHERE BLOG_NO = #{blogNo}  
+  </select>
+
+  <!-- Map 에 저장할 목록은 blogNo, begin, end 3가지가 있음을 기억! -->
+  <select id="getCommentList"
+          parameterType="Map"
+          resultMap="CommentMap">
+    SELECT COMMENT_NO, CONTENTS, CREATE_DT, DEPTH, GROUP_NO, BLOG_NO, USER_NO, EMAIL
+      FROM (SELECT ROW_NUMBER() OVER(ORDER BY C.GROUP_NO DESC, C.DEPTH ASC, C.COMMENT_NO DESC) AS RN
+                 , C.COMMENT_NO, C.CONTENTS, C.CREATE_DT, C.DEPTH, C.GROUP_NO, C.BLOG_NO
+                 , U.USER_NO, U.EMAIL
+              FROM USER_T U INNER JOIN COMMENT_T C
+                ON U.USER_NO = C.USER_NO
+             WHERE BLOG_NO = #{blogNo})
+     WHERE RN BETWEEN #{begin} AND #{end}
+  </select>
 
 </mapper>

@@ -149,6 +149,33 @@ public class BlogServiceImpl implements BlogService {
     return blogMapper.insertComment(comment);
   }
   
+  @Override
+  public Map<String, Object> getCommentList(HttpServletRequest request) {
+    
+    // 요청 파라미터
+    int blogNo = Integer.parseInt(request.getParameter("blogNo"));
+    int page = Integer.parseInt(request.getParameter("page"));
+    
+    // 전체 댓글 개수
+    int total = blogMapper.getCommentCount(blogNo);
+    
+    // 한 페이지에 표시할 댓글 개수
+    int display = 10;
+    
+    // 페이징처리
+    myPageUtils.setPaging(total, display, page);
+    
+    // 목록을 가져올 때 사용할 Map 생성
+    Map<String, Object> map = Map.of("blogNo", blogNo
+                                   , "begin", myPageUtils.getBegin()
+                                   , "end", myPageUtils.getEnd());
+    
+    // 결과 반환(목록, 페이징) 
+    // mypageUtils 안에 있는 getPaging 은 페이지 링크(reuqestURI)를 받아와서 페이지에 변화를 주는 메소드
+    // 현재 목록을 조회하는 방식은 ajax 이므로 페이지 변화가 없음. -> getAsyncPaging 메소드를 이용해서 페이징 처리를 해주어야함.
+    return Map.of("commentList", blogMapper.getCommentList(map)
+                , "paging", myPageUtils.getAsyncPaging());
+  }
 
 }
 
