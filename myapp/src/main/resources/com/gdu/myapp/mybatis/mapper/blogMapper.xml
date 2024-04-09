@@ -65,5 +65,29 @@
         ON U.USER_NO = B.USER_NO
      WHERE B.BLOG_NO = #{blogNo}
   </select>
+  
+  <!-- Dto 를 보면서 어떻게 전달되고 있는지 확인하면서 작성 -->
+  <insert id="insertComment"
+          parameterType="CommentDto">
+    INSERT INTO COMMENT_T (
+        COMMENT_NO
+      , CONTENTS
+      , CREATE_DT
+      , DEPTH
+      , GROUP_NO
+      , USER_NO
+      , BLOG_NO
+    ) VALUES (
+        COMMENT_SEQ.NEXTVAL
+      , #{contents}
+      , CURRENT_TIMESTAMP
+      , 0
+      , COMMENT_SEQ.CURRVAL
+      , #{user.userNo}
+      , #{blogNo}
+    )
+  
+  
+  </insert>
 
 </mapper>

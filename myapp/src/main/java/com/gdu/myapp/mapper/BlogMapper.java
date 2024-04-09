@@ -6,6 +6,7 @@ import java.util.Map;
 import org.apache.ibatis.annotations.Mapper;
 
 import com.gdu.myapp.dto.BlogDto;
+import com.gdu.myapp.dto.CommentDto;
 
 @Mapper
 public interface BlogMapper {
@@ -13,4 +14,5 @@ public interface BlogMapper {
   int getBlogCount();
   List<BlogDto> getBlogList(Map<String, Object> map);
   BlogDto getBlogByNo(int blogNo);
+  int insertComment(CommentDto comment);
 }

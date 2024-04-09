@@ -93,7 +93,7 @@ CREATE TABLE BLOG_T (
 CREATE TABLE COMMENT_T (
   COMMENT_NO NUMBER              NOT NULL,
   CONTENTS   VARCHAR2(4000 BYTE) NOT NULL,
-  CREATED_DT TIMESTAMP,
+  CREATE_DT TIMESTAMP,
   DEPTH      NUMBER,        -- 원글0, 답글1
   GROUP_NO   NUMBER,        -- 원글에 달린 모든 답글은 동일한 GROUP_NO 를 가짐. 1차 답글만 작성하기 때문에 GROUP_ORDER 작성 할 필요 없음.
   USER_NO    NUMBER,        -- NULL 이냐 NOT NULL 이 좋냐 물어보면 NULL 이 더 편하긴함. 넣어도 그만 안넣어도 그만. 

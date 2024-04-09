@@ -4,7 +4,6 @@ import java.io.File;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -16,6 +15,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.gdu.myapp.dto.BlogDto;
+import com.gdu.myapp.dto.CommentDto;
 import com.gdu.myapp.dto.UserDto;
 import com.gdu.myapp.mapper.BlogMapper;
 import com.gdu.myapp.utils.MyFileUtils;
@@ -124,6 +124,29 @@ public class BlogServiceImpl implements BlogService {
   @Override
   public BlogDto getBlogByNo(int blogNo) {
     return blogMapper.getBlogByNo(blogNo);
+  }
+  
+  @Override
+  public int registerComment(HttpServletRequest request) {
+    
+    // 요청 파라미터
+    String contents = MySecurityUtils.getPreventXss(request.getParameter("contents"));
+    int blogNo = Integer.parseInt(request.getParameter("blogNo"));
+    int userNo = Integer.parseInt(request.getParameter("userNo"));
+    
+    // UserDto 객체 생성
+    UserDto user = new UserDto();
+    user.setUserNo(userNo);
+    
+    // CommentDto 객체 생성
+    CommentDto comment = CommentDto.builder()
+                              .contents(contents)
+                              .user(user)
+                              .blogNo(blogNo)
+                            .build();
+    
+    // DB 에 저장 & 결과 반환
+    return blogMapper.insertComment(comment);
   }
   
 
