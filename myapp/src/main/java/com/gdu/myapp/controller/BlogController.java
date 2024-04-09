@@ -62,6 +62,13 @@ public class BlogController {
     return blogService.getBlogList(request);
   }
   
+  @GetMapping("/updateHit.do")
+  public String updateHit(@RequestParam int blogNo) {
+    blogService.updateHit(blogNo);
+    // return "redirect:/blog/detail.do"; 이렇게 하면 안된다. 상세보기할 때는 blogNo 를 파라미터로 넘겨줘야한다.
+    return "redirect:/blog/detail.do?blogNo=" + blogNo;
+  }
+  
   @GetMapping("/detail.do")
   // 번호 한개 blogNo, Model 에 blog 내용을 저장을 해서 넘겨줘야함.
   public String detail(@RequestParam int blogNo, Model model) {
@@ -88,6 +95,17 @@ public class BlogController {
     return ResponseEntity.ok(Map.of("insertReplyCount", blogService.registerReply(request)));
   }
   
+  @GetMapping("/remove.do")
+  public String delete(@RequestParam int blogNo) {
+    blogService.deleteBlog(blogNo);
+    return "redirect:/blog/list.page";
+  }
+  
+  @GetMapping("/removeReply.do")
+  public String deleteReply(HttpServletRequest request, RedirectAttributes redirectAttributes) {
+    redirectAttributes.addFlashAttribute("deleteCount", blogService.deleteReply(request));
+    return "redirect:/blog/detail.do?blogNo=" + request.getParameter("blogNo");
+  }
   
   
 }

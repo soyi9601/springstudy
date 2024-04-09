@@ -94,6 +94,7 @@ CREATE TABLE COMMENT_T (
   COMMENT_NO NUMBER              NOT NULL,
   CONTENTS   VARCHAR2(4000 BYTE) NOT NULL,
   CREATE_DT TIMESTAMP,
+  STATE      NUMBER,        -- 삭제0, 정상1
   DEPTH      NUMBER,        -- 원글0, 답글1
   GROUP_NO   NUMBER,        -- 원글에 달린 모든 답글은 동일한 GROUP_NO 를 가짐. 1차 답글만 작성하기 때문에 GROUP_ORDER 작성 할 필요 없음.
   USER_NO    NUMBER,        -- NULL 이냐 NOT NULL 이 좋냐 물어보면 NULL 이 더 편하긴함. 넣어도 그만 안넣어도 그만. 
@@ -113,13 +114,6 @@ CREATE TABLE COMMENT_T (
 INSERT INTO USER_T VALUES(USER_SEQ.NEXTVAL, 'admin@example.com', STANDARD_HASH('admin', 'SHA256'), '관리자', 'man', '010-1111-1111', 1, 0, CURRENT_DATE, CURRENT_DATE);
 COMMIT;
 
-SELECT BLOG_NO, TITLE, CONTENTS, HIT, CREATE_DT, MODIFY_DT, USER_NO, EMAIL
-      FROM (SELECT ROW_NUMBER() OVER(ORDER BY B.BLOG_NO DESC) AS RN
-                 , B.BLOG_NO, B.TITLE, B.CONTENTS, B.HIT, B.CREATE_DT, B.MODIFY_DT
-                 , U.USER_NO, U.EMAIL
-              FROM USER_T U INNER JOIN BLOG_T B
-                ON U.USER_NO = B.USER_NO)
-     WHERE RN BETWEEN 1 AND 10
 
 
 /************************* 트리거 *************************/

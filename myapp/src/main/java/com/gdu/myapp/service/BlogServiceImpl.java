@@ -122,6 +122,11 @@ public class BlogServiceImpl implements BlogService {
   }
   
   @Override
+  public int updateHit(int blogNo) {
+    return blogMapper.updateHit(blogNo);
+  }
+  
+  @Override
   public BlogDto getBlogByNo(int blogNo) {
     return blogMapper.getBlogByNo(blogNo);
   }
@@ -202,5 +207,20 @@ public class BlogServiceImpl implements BlogService {
     return blogMapper.insertReply(reply);    
   }
 
+  @Override
+  public int deleteBlog(int blogNo) {
+    return blogMapper.deleteBlog(blogNo);
+  }
+  
+  @Override
+  public int deleteReply(HttpServletRequest request) {
+    int commentNo = Integer.parseInt(request.getParameter("commentNo"));
+    int blogNo = Integer.parseInt(request.getParameter("blogNo"));
+    CommentDto comment = CommentDto.builder()
+                              .blogNo(blogNo)
+                              .commentNo(commentNo)
+                            .build();
+    return blogMapper.deleteReply(comment);
+  }
 }
 

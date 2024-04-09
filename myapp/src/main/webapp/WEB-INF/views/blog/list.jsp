@@ -34,7 +34,7 @@
 		  success: (resData) => {   // resData = {"blogList": [], "totalPage": 10}
 			  totalPage = resData.totalPage; // 가져와서 갱신해준다
 			  $.each(resData.blogList, (i, blog) => {
-				  let str = '<div class="blog" data-blog-no="' + blog.blogNo + '">';
+				  let str = '<div class="blog" data-user-no="' + blog.user.userNo + '"data-blog-no="' + blog.blogNo + '">';
 				  str += '<span>' + blog.title + '</span>';
 				  str += '<span>' + blog.user.email + '</span>';
 				  str += '<span>' + blog.hit + '</span>';
@@ -94,7 +94,17 @@
 		  // <div class="blog"> 중 클릭 이벤트가 발생한 <div> : 이벤트 대상
 		  // alert(evt.target.dataset.blogNo);
 		  // jQuery : alert($(evt.target).data('blogNo'));
-		  location.href = '${contextPath}/blog/detail.do?blogNo=' + evt.target.dataset.blogNo;
+		  /* 
+		    아래의 링크는 조회수는 늘려주지 않고 상세보기만 보이는 링크
+		    location.href = '${contextPath}/blog/detail.do?blogNo=' + evt.target.dataset.blogNo;
+		  */
+		  if('${sessionScope.user.userNo}' === evt.target.dataset.userNo) {
+			  location.href = '${contextPath}/blog/detail.do?blogNo=' + evt.target.dataset.blogNo;
+		  } else {
+			  location.href = '${contextPath}/blog/updateHit.do?blogNo=' + evt.target.dataset.blogNo;
+		  }
+			  
+		  
 		})
 		  
   }

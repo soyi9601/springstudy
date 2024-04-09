@@ -17,6 +17,11 @@
     </div>
     
     <div>
+      <span>조회수</span>
+      <span>${blog.hit}</span>
+    </div>
+    
+    <div>
       <span>제목</span>
       <span>${blog.title}</span>
     </div>
@@ -25,6 +30,14 @@
       <span>내용</span>
       <span>${blog.contents}</span>
     </div> 
+    
+    <c:if test="${sessionScope.user.userNo == blog.user.userNo}">
+      <div>
+        <button type="button" class="btn-blog-modify">수정</button>
+        <button type="button" class="btn-blog-remove">삭제</button>
+      </div>
+    </c:if>
+    
     
   <hr>
   
@@ -52,6 +65,14 @@
         location.href = '${contextPath}/user/signin.page';
       }
     }
+  }
+  
+  const fnBtnRemoveBlog = () => {
+	  $('.btn-blog-remove').on('click', (evt) => {
+		  if(confirm('게시글 삭제할까요?')) {
+			  location.href = '${contextPath}/blog/remove.do?blogNo=' + ${blog.blogNo};
+		  }
+	  })
   }
 
   const fnRegisterComment = () => {
@@ -116,7 +137,11 @@
 				  str +=  comment.user.email;
 				  str += '(' + moment(comment.createDt).format('YYYY.MM.DD.') + ')';
 				  str += '</span>';
-				  str += '<div>' + comment.contents + '</div>';
+				  if(comment.state === 0) {
+					  str += '<div>삭제된 댓글입니다.</div>'; 
+				  } else {
+  				  str += '<div>' + comment.contents + '</div>';					  
+				  }				  
 				  // 답글 버튼 (원글에만 답글 버튼이 생긴다.)
 				  if(comment.depth === 0) {
 					  str += '<button type="button" class="btn btn-success btn-reply">답글</button>';
@@ -124,7 +149,7 @@
 				  // 삭제 버튼 (내가 작성한 댓글에만 삭제 버튼이 생긴다.)
 				  // if('${sessionScope.user.userNo}' == comment.user.userNo) 값은 같으나 타입이 달라서 == 로 사용할 수 있음.
 				  if(Number('${sessionScope.user.userNo}') === comment.user.userNo) {
-					  str += '<button type="button" class="btn btn-danger btn-remove" data-comment-no="' + comment.commentNo + '">삭제</button>';
+					  str += '<button type="button" class="btn btn-danger btn-remove" data-comment-no="' + comment.commentNo + '" data-blog-no="' + ${blog.blogNo} + '">삭제</button>';
 				  }
 				  /******************************** 답글 입력 화면 ********************************/
 				  /********************************************************************************/
@@ -151,6 +176,22 @@
 			  alert(jqXHR.statusText + '(' + jqXHR.status + ')');
 		  }
 	  })
+  }
+  
+  const fnBtnRemoveBlog = () => {
+	    $('.btn-blog-remove').on('click', (evt) => {
+	      if(confirm('게시글 삭제할까요?')) {
+	        location.href = '${contextPath}/blog/remove.do?blogNo=' + ${blog.blogNo};
+	      }
+	    })
+	  }
+  
+  const fnReplyRemove = () => {
+	  $(document).on('click', '.btn-remove', (evt) => {
+		  if(confirm('답글을 삭제할까요?')) {
+			  location.href = '${contextPath}/blog/comment/remove.do?blogNo=' + ${blog.blogNo};
+		  }
+	  }
   }
   
   const fnPaging = (p) => {
@@ -200,6 +241,7 @@
   fnRegisterComment();
   fnCommentList();
   fnRegisterReply();
+  fnBtnRemoveBlog();
 
 </script>
 

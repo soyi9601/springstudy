@@ -20,6 +20,7 @@
   
   <resultMap type="CommentDto" id="CommentMap">
     <id     property="commentNo" column="COMMENT_NO" />
+    <result property="state"     column="STATE" />
     <result property="depth"     column="DEPTH" />
     <result property="groupNo"   column="GROUP_NO" />
     <result property="blogNo"    column="BLOG_NO" />
@@ -69,6 +70,13 @@
      WHERE RN BETWEEN #{begin} AND #{end}
   </select>
   
+  <!-- HIT 올려주기 -->
+  <update id="updateHit">
+    UPDATE BLOG_T
+       SET HIT = HIT + 1
+     WHERE BLOG_NO = #{blogNo}
+  </update>
+  
   <!-- Map 이나 Dto 가 전달될 때는 parameterType 이 꼭 전달 되는데 일반 변수는 적지 않아도 됨 -->
   <select id="getBlogByNo"
           resultMap="BlogMap">
@@ -86,6 +94,7 @@
         COMMENT_NO
       , CONTENTS
       , CREATE_DT
+      , STATE
       , DEPTH
       , GROUP_NO
       , USER_NO
@@ -94,6 +103,7 @@
         COMMENT_SEQ.NEXTVAL
       , #{contents}
       , CURRENT_TIMESTAMP
+      , 1
       , 0
       , COMMENT_SEQ.CURRVAL
       , #{user.userNo}
@@ -112,9 +122,9 @@
   <select id="getCommentList"
           parameterType="Map"
           resultMap="CommentMap">
-    SELECT COMMENT_NO, CONTENTS, CREATE_DT, DEPTH, GROUP_NO, BLOG_NO, USER_NO, EMAIL
+    SELECT COMMENT_NO, CONTENTS, CREATE_DT, STATE, DEPTH, GROUP_NO, BLOG_NO, USER_NO, EMAIL
       FROM (SELECT ROW_NUMBER() OVER(ORDER BY C.GROUP_NO DESC, C.DEPTH ASC, C.COMMENT_NO DESC) AS RN
-                 , C.COMMENT_NO, C.CONTENTS, C.CREATE_DT, C.DEPTH, C.GROUP_NO, C.BLOG_NO
+                 , C.COMMENT_NO, C.CONTENTS, C.CREATE_DT, C.STATE, C.DEPTH, C.GROUP_NO, C.BLOG_NO
                  , U.USER_NO, U.EMAIL
               FROM USER_T U INNER JOIN COMMENT_T C
                 ON U.USER_NO = C.USER_NO
@@ -128,6 +138,7 @@
         COMMENT_NO
       , CONTENTS
       , CREATE_DT
+      , STATE
       , DEPTH
       , GROUP_NO
       , USER_NO
@@ -137,10 +148,27 @@
       , #{contents}
       , CURRENT_TIMESTAMP
       , 1
+      , 1
       , #{groupNo}
       , #{user.userNo}
       , #{blogNo}
     )
   </insert>
+  
+  <delete id="deleteBlog">
+    DELETE
+      FROM BLOG_T
+     WHERE BLOG_NO = #{blogNo}  
+  </delete>
+  
+  <update id="removeReply">
+    UPDATE COMMENT_T
+       SET STATE = 0
+     WHERE COMMENT_NO = #{commentNo}
+  </update>
 
 </mapper>
+
+
+
+
