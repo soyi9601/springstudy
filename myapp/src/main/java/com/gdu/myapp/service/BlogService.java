@@ -19,6 +19,8 @@ public interface BlogService {
   
   int registerComment(HttpServletRequest request);
   Map<String, Object> getCommentList(HttpServletRequest request);
+  
+  int registerReply(HttpServletRequest request);
 }
 
 // 선택지 : Request, RequestParam, 커맨드 객체

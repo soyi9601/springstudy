@@ -121,5 +121,26 @@
              WHERE BLOG_NO = #{blogNo})
      WHERE RN BETWEEN #{begin} AND #{end}
   </select>
+  
+  <insert id="insertReply"
+          parameterType="CommentDto">
+    INSERT INTO COMMENT_T (
+        COMMENT_NO
+      , CONTENTS
+      , CREATE_DT
+      , DEPTH
+      , GROUP_NO
+      , USER_NO
+      , BLOG_NO
+    ) VALUES (
+        COMMENT_SEQ.NEXTVAL
+      , #{contents}
+      , CURRENT_TIMESTAMP
+      , 1
+      , #{groupNo}
+      , #{user.userNo}
+      , #{blogNo}
+    )
+  </insert>
 
 </mapper>

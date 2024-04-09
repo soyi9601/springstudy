@@ -176,6 +176,31 @@ public class BlogServiceImpl implements BlogService {
     return Map.of("commentList", blogMapper.getCommentList(map)
                 , "paging", myPageUtils.getAsyncPaging());
   }
+  
+  @Override
+  public int registerReply(HttpServletRequest request) {
+    
+    // 요청 파라미터
+    String contents = MySecurityUtils.getPreventXss(request.getParameter("contents"));
+    int groupNo = Integer.parseInt(request.getParameter("groupNo"));
+    int blogNo = Integer.parseInt(request.getParameter("blogNo"));
+    int userNo = Integer.parseInt(request.getParameter("userNo"));
+    
+    // UserDto 객체 생성
+    UserDto user = new UserDto();
+    user.setUserNo(userNo);
+    
+    // CommentDto 객체 생성
+    CommentDto reply = CommentDto.builder()
+                            .contents(contents)
+                            .groupNo(groupNo)
+                            .blogNo(blogNo)
+                            .user(user)
+                          .build();
+    
+    // DB에 저장 + 결과 반환
+    return blogMapper.insertReply(reply);
+  }
 
 }
 

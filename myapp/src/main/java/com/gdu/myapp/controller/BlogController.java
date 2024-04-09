@@ -83,6 +83,11 @@ public class BlogController {
     return ResponseEntity.ok(blogService.getCommentList(request));
   }
   
+  @PostMapping(value="/comment/registerReply.do", produces="application/json")
+  public ResponseEntity<Map<String, Object>> registerReply(HttpServletRequest request) {
+    return ResponseEntity.ok(Map.of("replyCount", blogService.registerComment(request)));
+  }
+  
   
   
 }

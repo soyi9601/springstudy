@@ -22,4 +22,6 @@ public interface BlogMapper {
   // 댓글 조회
   int getCommentCount(int blogNo);
   List<CommentDto> getCommentList(Map<String, Object> map);
+  
+  int insertReply(CommentDto comment);
 }

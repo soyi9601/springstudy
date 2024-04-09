@@ -35,7 +35,7 @@
     <c:if test="${not empty sessionScope.user}">
       <input type="hidden" name="userNo" value="${sessionScope.user.userNo}">
     </c:if>
-    <button type="button" id="btn-comment-register">답글 작성</button>    
+    <button type="button" id="btn-comment-register">댓글 작성</button>    
   </form>
   
   <hr>
@@ -107,16 +107,38 @@
 				  let str = '';
 				  // 댓글은 들여쓰기 (댓글 여는 div)
 				  if(comment.depth === 0) {
-					  str += '<div>';
-				  } else {
-					  str += '<div style="paggin-left: 32px;">';
-				  }
+            str += '<div>';
+          } else {
+            str += '<div style="padding-left: 32px;">'
+          }
 				  // 댓글 내용 표시
 				  str += '<span>';
 				  str +=  comment.user.email;
 				  str += '(' + moment(comment.createDt).format('YYYY.MM.DD.') + ')';
 				  str += '</span>';
 				  str += '<div>' + comment.contents + '</div>';
+				  // 답글 버튼 (원글에만 답글 버튼이 생긴다.)
+				  if(comment.depth === 0) {
+					  str += '<button type="button" class="btn btn-success btn-reply">답글</button>';
+				  }
+				  // 삭제 버튼 (내가 작성한 댓글에만 삭제 버튼이 생긴다.)
+				  // if('${sessionScope.user.userNo}' == comment.user.userNo) 값은 같으나 타입이 달라서 == 로 사용할 수 있음.
+				  if(Number('${sessionScope.user.userNo}') === comment.user.userNo) {
+					  str += '<button type="button" class="btn btn-danger btn-remove" data-comment-no="' + comment.commentNo + '">삭제</button>';
+				  }
+				  /******************************** 답글 입력 화면 ********************************/
+				  /********************************************************************************/
+				  if(comment.depth === 0) {
+  				  str += '<div>';
+  				  str += '  <form class="frm-reply">';
+  				  str += '    <input type="hidden" name="groupNo" value="' + comment.groupNo + '">';
+  				  str += '    <input type="hidden" name="blogNo" value="${blog.blogNo}">';
+  				  str += '    <input type="hidden" name="userNo" value="${sessionScope.user.userNo}">';
+  				  str += '    <textarea name="contents" placeholder="답글입력"></textarea>';
+  				  str += '    <button type="button" class="btn btn-warning btn-register-reply">답글작성완료</button>';
+  				  str += '  </form>';
+  				  str += '</div>';					  
+				  }
 				  // 댓글 닫는 <div>
 				  str += '</div>';
 				  // 목록에 댓글 추가
@@ -135,10 +157,49 @@
 	  page = p;
 	  fnCommentList();
   }
+  /*
+  const fnRegisterReply = () => {
+	  $('.btn-register-reply').on('click', (evt) => {
+		  let registerReplyCount = '${registerReplyCount}';
+		  if(registerReplyCount != '') {
+			  if(registerReplyCount === 1) {
+				  alert('답글 등록완료했습니다.');
+			  } else {
+				  alert('답글 등록 실패');
+			  }
+		  }
+	  })
+  }
+  */
+  
+  const fnRegisterReply = () => {
+    $(document).on('click', '.btn-register-reply', (evt) => {
+    	fnCheckSignin();
+      $.ajax({
+    	  type: 'POST',
+    	  url: '${contextPath}/blog/comment/registerReply.do',
+    	  data: $(evt.target).closest('.frm-reply').serialize(),
+    	  dataType: 'json',
+    	  success: (resData) => {
+    		  if(resData.replyCount === 1) {
+    			  alert('답글 등록되었습니다.');
+    			  $(evt.target).prev().val('');
+    			  fnCommentList();
+    		  } else {
+    			  alert('답글 등록이 실패했습니다.');
+    		  }
+    	  },
+    	  error: (jqXHR) => {
+    		  alert(jqXHR.statusText + '(' + jqXHR.status + ')')
+    	  }
+      })
+    })
+  }
   
   $('#contents').on('click', fnCheckSignin);
   fnRegisterComment();
   fnCommentList();
+  fnRegisterReply();
 
 </script>
 
