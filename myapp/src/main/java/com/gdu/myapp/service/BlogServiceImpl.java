@@ -181,7 +181,7 @@ public class BlogServiceImpl implements BlogService {
   public int registerReply(HttpServletRequest request) {
     
     // 요청 파라미터
-    String contents = MySecurityUtils.getPreventXss(request.getParameter("contents"));
+    String contents = request.getParameter("contents");
     int groupNo = Integer.parseInt(request.getParameter("groupNo"));
     int blogNo = Integer.parseInt(request.getParameter("blogNo"));
     int userNo = Integer.parseInt(request.getParameter("userNo"));
@@ -192,14 +192,14 @@ public class BlogServiceImpl implements BlogService {
     
     // CommentDto 객체 생성
     CommentDto reply = CommentDto.builder()
-                            .contents(contents)
-                            .groupNo(groupNo)
-                            .blogNo(blogNo)
-                            .user(user)
-                          .build();
+                          .contents(contents)
+                          .groupNo(groupNo)
+                          .blogNo(blogNo)
+                          .user(user)
+                        .build();
     
-    // DB에 저장 + 결과 반환
-    return blogMapper.insertReply(reply);
+    // DB 에 저장하고 결과 반환
+    return blogMapper.insertReply(reply);    
   }
 
 }

@@ -173,28 +173,28 @@
   */
   
   const fnRegisterReply = () => {
-    $(document).on('click', '.btn-register-reply', (evt) => {
-    	fnCheckSignin();
-      $.ajax({
-    	  type: 'POST',
-    	  url: '${contextPath}/blog/comment/registerReply.do',
-    	  data: $(evt.target).closest('.frm-reply').serialize(),
-    	  dataType: 'json',
-    	  success: (resData) => {
-    		  if(resData.replyCount === 1) {
-    			  alert('답글 등록되었습니다.');
-    			  $(evt.target).prev().val('');
-    			  fnCommentList();
-    		  } else {
-    			  alert('답글 등록이 실패했습니다.');
-    		  }
-    	  },
-    	  error: (jqXHR) => {
-    		  alert(jqXHR.statusText + '(' + jqXHR.status + ')')
-    	  }
-      })
-    })
-  }
+	  $(document).on('click', '.btn-register-reply', (evt) => {
+	    fnCheckSignin();
+	    $.ajax({
+	      type: 'POST',
+	      url: '${contextPath}/blog/comment/registerReply.do',
+	      data: $(evt.target).closest('.frm-reply').serialize(),
+	      dataType: 'json',
+	      success: (resData) => {
+	        if(resData.insertReplyCount === 1) {
+	          alert('답글이 등록되었습니다.');
+	          $(evt.target).prev().val('');
+	          fnCommentList();
+	        } else {
+	          alert('답글 등록이 실패했습니다.');
+	        }
+	      },
+	      error: (jqXHR) => {
+	        alert(jqXHR.statusText + '(' + jqXHR.status + ')');
+	      }
+	    })
+	  })
+	}
   
   $('#contents').on('click', fnCheckSignin);
   fnRegisterComment();
