@@ -3,6 +3,10 @@ package com.gdu.myapp.service;
 import java.io.File;
 import java.nio.file.Files;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+
+import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.stereotype.Service;
 import org.springframework.ui.Model;
@@ -117,8 +121,74 @@ public class UploadServiceImpl implements UploadService {
 
   @Override
   public void loadUploaddList(Model model) {
-
     
+    /* 
+     * method 는 하나지만 클래스들의 이름이 계속 바뀔 수 있다. (파라마티 model 하나만 사용 -> service로 넘겨주는 controller 단에서 클래스를 계속 바꿔가면서 사용하는 것.)
+     * interface UploadService {
+     *   void execute(Model model);
+     * }
+     * 
+     * class UploadRegisterSErvice implements UploadService {
+     *   @Override
+     *   void execute(Model model) {     *   
+     *   }
+     * }
+     * 
+     * class UploadService implements UploadService {
+     *  @override
+     *  void execute(Model model) {
+     *  }
+     * }
+     * 
+     */
+    
+    // model.asMap : 예전에 쓰던 방식 -> model 을 map 으로 바꿔서 map 에 있는 데이터를 꺼내씀.
+    // model.getAttribute 가 생겼음. version 이 5.2로 아주 최신 버전!
+    Map<String, Object> modelMap = model.asMap();
+    HttpServletRequest request = (HttpServletRequest) modelMap.get("request");
+    
+    int total = uploadMapper.getUploadCount();
+    
+    Optional<String> optDisplay = Optional.ofNullable(request.getParameter("display"));
+    int display = Integer.parseInt(optDisplay.orElse("20"));
+    
+    Optional<String> optPage = Optional.ofNullable(request.getParameter("page"));
+    int page = Integer.parseInt(optPage.orElse("1"));
+    
+    myPageUtils.setPaging(total, display, page);
+    
+    Optional<String> optSort = Optional.ofNullable(request.getParameter("sort"));
+    String sort = optSort.orElse("DESC");
+    
+    Map<String, Object> map = Map.of("begin", myPageUtils.getBegin(), "end", myPageUtils.getEnd(), "sort", sort);
+    
+    /*
+     * total = 100, display = 20
+     * 
+     * page    beginNo
+     * 1
+     * 2
+     * 3
+     * 4
+     * 5
+     */
+    
+    model.addAttribute("beginNo", total - (page - 1) * display);
+    model.addAttribute("uploadList", uploadMapper.getUploadList(map));
+    model.addAttribute("paging", myPageUtils.getPaging(request.getContextPath() + "/upload/list.do", sort, display));
+    model.addAttribute("display", display);
+    model.addAttribute("sort", sort);
+    model.addAttribute("page", page);
+  }
+  
+  @Override
+  public UploadDto getUploadByNo(int uploadNo) {
+    return uploadMapper.getUploadByNo(uploadNo);
   }
 
 }
+
+
+
+
+

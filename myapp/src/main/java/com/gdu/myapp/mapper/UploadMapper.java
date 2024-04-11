@@ -14,4 +14,5 @@ public interface UploadMapper {
   int insertAttach(AttachDto attach);
   int getUploadCount();
   List<UploadDto> getUploadList(Map<String, Object> map); 
+  UploadDto getUploadByNo(int uploadNo);
 }
