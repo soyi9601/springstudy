@@ -9,6 +9,7 @@
 		http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-4.3.xsd
 		http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.3.xsd">
 	
+  <!-- bean 의 ID 는 무조건 nultipartResolver 로 지정되어야함. 다른 이름을 쓰면 찾지 못함. -->
   <bean id="multipartResolver"
         class="org.springframework.web.multipart.commons.CommonsMultipartResolver"
         scope="singleton">

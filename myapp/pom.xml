@@ -19,6 +19,13 @@
     
   <dependencies>
   
+    <!-- https://mvnrepository.com/artifact/net.coobird/thumbnailator -->
+    <dependency>
+      <groupId>net.coobird</groupId>
+      <artifactId>thumbnailator</artifactId>
+      <version>0.4.20</version>
+    </dependency>    
+  
     <!-- Java 에서 사용하는 HTML parser  -->
     <!-- https://mvnrepository.com/artifact/org.jsoup/jsoup -->
     <dependency>
