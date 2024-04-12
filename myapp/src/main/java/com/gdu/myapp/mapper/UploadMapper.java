@@ -16,8 +16,8 @@ public interface UploadMapper {
   List<UploadDto> getUploadList(Map<String, Object> map); 
   UploadDto getUploadByNo(int uploadNo);
   
-  List<AttachDto> getAttachList(int uploadNo);
+  List<AttachDto> getAttachList(int uploadNo);  // 첨부파일 리스트 -> 모두 다운로드에 사용
   
-  AttachDto getAttachByNo(int attachNo);
-  int updateDownloadCount(int attachNo);
+  AttachDto getAttachByNo(int attachNo);        // 첨부된 파일의 정보 가져오기
+  int updateDownloadCount(int attachNo);        // 첨부파일의 downloadCount +1 시켜주기
 }

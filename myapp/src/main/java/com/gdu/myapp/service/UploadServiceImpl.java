@@ -327,6 +327,19 @@ public class UploadServiceImpl implements UploadService {
     return new ResponseEntity<Resource>(resource, responseHeader, HttpStatus.OK);
     
   }
+  
+  @Override
+  public void removeTempFiles() {
+    
+    // 임시 폴더의 모든 파일 제거
+    File tempDir = new File(myFileUtils.getTempPath());    
+    File[] tempFiles = tempDir.listFiles();    // tempDir 안에 있는 파일을 전부 가져와라.
+    if(tempFiles != null) {   // tempFile 이 null 이 아니면 다 지워라!
+      for(File tempFile : tempFiles) {
+        tempFile.delete();
+      }
+    }    
+  }
 
 }
 

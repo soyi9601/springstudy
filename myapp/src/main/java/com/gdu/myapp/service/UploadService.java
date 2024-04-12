@@ -16,4 +16,5 @@ public interface UploadService {
   // 파일 자체를 반환할 때는 resource 를 쓰면 편하다. 페이지 안바꾸는 요청이기 때문에 responseEntity
   ResponseEntity<Resource> download(HttpServletRequest request);
   ResponseEntity<Resource> downloadAll(HttpServletRequest request);
+  void removeTempFiles();
 }
