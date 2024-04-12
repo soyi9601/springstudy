@@ -94,5 +94,24 @@
      WHERE UP.UPLOAD_NO = #{uploadNo}
   </select>
 
+  <select id="getAttachList"
+          resultType="AttachDto">
+    SELECT ATTACH_NO, DOWNLOAD_COUNT, HAS_THUMBNAIL, UPLOAD_PATH, FILESYSTEM_NAME, ORIGINAL_FILENAME
+      FROM ATTACH_T
+     WHERE UPLOAD_NO = #{uploadNo}
+  </select>
+  
+  <select id="getAttachByNo"
+          resultType="AttachDto">
+    SELECT ATTACH_NO, DOWNLOAD_COUNT, HAS_THUMBNAIL, UPLOAD_PATH, FILESYSTEM_NAME, ORIGINAL_FILENAME
+      FROM ATTACH_T
+     WHERE ATTACH_NO = #{attachNo}
+  </select>
+  
+  <update id="updateDownloadCount">
+    UPDATE ATTACH_T
+       SET DOWNLOAD_COUNT = DOWNLOAD_COUNT + 1
+     WHERE ATTACH_NO = #{attachNo}
+  </update>
   
 </mapper>

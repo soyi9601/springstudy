@@ -2,6 +2,8 @@ package com.gdu.myapp.controller;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.springframework.core.io.Resource;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -41,11 +43,27 @@ public class UploadController {
     return "redirect:/upload/list.do";
   }
   
+  /*
+   @GetMapping("/detail.do") public String detail(@RequestParam int uploadNo,
+   Model model) { model.addAttribute("upload",
+   uploadService.getUploadByNo(uploadNo)); return "/upload/detail"; }
+   */
+  
   @GetMapping("/detail.do")
-  public String detail(@RequestParam int uploadNo, Model model) {
-    model.addAttribute("upload", uploadService.getUploadByNo(uploadNo));
-    return "/upload/detail";
+  public String detail(@RequestParam(value="uploadNo", required=false, defaultValue="0") int uploadNo
+                     , Model model) {
+    uploadService.loadUploadByNo(uploadNo, model);
+    return "upload/detail";
   }
   
+  @GetMapping("/download.do")
+  public ResponseEntity<Resource> download(HttpServletRequest request) {
+    return uploadService.download(request);
+  }
+  
+  @GetMapping("/downloadAll.do")
+  public ResponseEntity<Resource> downloadAll(HttpServletRequest request) {
+    return uploadService.downloadAll(request);
+  }
   
 }

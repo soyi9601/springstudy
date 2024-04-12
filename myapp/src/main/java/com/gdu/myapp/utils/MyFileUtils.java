@@ -28,4 +28,14 @@ public class MyFileUtils {
     return UUID.randomUUID().toString().replace("-", "") + extName;
   }
   
+  // 임시 파일 경로 반환
+  public String getTempPath() {
+    return "/temporary";
+  }
+  
+  // 임시 파일 이름 반환 (확장자 제외하고 이름만 반환)
+  public String getTempFilename() {
+    return System.currentTimeMillis() + "";
+  }
+  
 }
