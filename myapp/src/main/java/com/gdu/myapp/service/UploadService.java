@@ -1,5 +1,7 @@
 package com.gdu.myapp.service;
 
+import java.util.Map;
+
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.core.io.Resource;
@@ -21,4 +23,7 @@ public interface UploadService {
   void removeTempFiles();
   UploadDto getUploadByNo(int uploadNo);
   int modifyUpload(UploadDto upload);
+  
+  ResponseEntity<Map<String, Object>> getAttachList(int uploadNo);
+  ResponseEntity<Map<String, Object>> removeAttach(int attachNo);
 }

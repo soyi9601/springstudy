@@ -123,4 +123,10 @@
      WHERE UPLOAD_NO = #{uploadNo}
   </update>
   
+  <delete id="deleteAttach">
+    DELETE
+      FROM ATTACH_T
+     WHERE ATTACH_NO = #{attachNo}
+  </delete>
+  
 </mapper>
