@@ -20,4 +20,5 @@ public interface UploadMapper {
   
   AttachDto getAttachByNo(int attachNo);        // 첨부된 파일의 정보 가져오기
   int updateDownloadCount(int attachNo);        // 첨부파일의 downloadCount +1 시켜주기
+  int updateUpload(UploadDto upload);
 }

@@ -26,12 +26,28 @@
       <span>${upload.contents}</span>
     </div> 
     
-    <c:if test="${sessionScope.user.userNo == upload.user.userNo}">
-      <div>
-        <button type="button" class="btn-blog-modify">수정</button>
-        <button type="button" class="btn-blog-remove">삭제</button>
-      </div>
-    </c:if>
+    <div>
+      <span>작성일자</span>
+      <span>${upload.createDt}</span>
+    </div>
+    
+    <div>
+      <span>최종수정일</span>
+      <span>${upload.modifyDt}</span>
+    </div>
+    
+    <div>
+      <c:if test="${not empty sessionScope.user}">  
+        <c:if test="${sessionScope.user.userNo == upload.user.userNo}">
+          <form id="frm-btn" method="POST">  
+            <input type="hidden" name="uploadNo" value="${upload.uploadNo}">
+            <button type="button" id="btn-edit" class="btn btn-warning btn-sm">편집</button>
+            <button type="button" id="btn-remove" class="btn btn-danger btn-sm">삭제</button>
+          </form>
+        </c:if>
+      </c:if>
+    </div>
+    
   <hr>
   
   <!-- 첨부 목록  -->
@@ -77,8 +93,31 @@
 	  })
   }
   
+  // 전역 객체
+  var frmBtn = document.getElementById('frm-btn');
+  
+  const fnEditUpload = () => {
+	  document.getElementById('btn-edit').addEventListener('click', () => {
+		  frmBtn.action = '${contextPath}/upload/edit.do';
+		  frmBtn.submit();
+	  })
+  }
+  
+  const fnAfterModifyUpdate = () => {
+	  const updateCount = '${updateCount}';
+	  if(updateCount !== '') {
+		  if(updateCount === '1') {
+			  alert('게시글이 수정되었습니다.');
+		  } else {
+			  alert('게시글이 수정되지 않았습니다.');
+		  }
+	  }
+  }
+  
   fnDownload();
   fnDownloadAll();
+  fnEditUpload();
+  fnAfterModifyUpdate();
   
 </script>
 

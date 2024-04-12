@@ -340,6 +340,16 @@ public class UploadServiceImpl implements UploadService {
       }
     }    
   }
+  
+  @Override
+  public UploadDto getUploadByNo(int uploadNo) {
+    return uploadMapper.getUploadByNo(uploadNo);
+  }
+  
+  @Override
+  public int modifyUpload(UploadDto upload) {
+    return uploadMapper.updateUpload(upload);
+  }
 
 }
 

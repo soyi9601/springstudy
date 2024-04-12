@@ -114,4 +114,13 @@
      WHERE ATTACH_NO = #{attachNo}
   </update>
   
+  <update id="updateUpload"
+          parameterType="UploadDto">
+    UPDATE UPLOAD_T
+       SET TITLE = #{title}
+         , CONTENTS = #{contents}
+         , MODIFY_DT = TO_CHAR(CURRENT_DATE, 'YYYY-MM-DD HH24:MI:SS')
+     WHERE UPLOAD_NO = #{uploadNo}
+  </update>
+  
 </mapper>

@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import com.gdu.myapp.dto.UploadDto;
 import com.gdu.myapp.service.UploadService;
 
 import lombok.RequiredArgsConstructor;
@@ -64,6 +65,23 @@ public class UploadController {
   @GetMapping("/downloadAll.do")
   public ResponseEntity<Resource> downloadAll(HttpServletRequest request) {
     return uploadService.downloadAll(request);
+  }
+  
+  @PostMapping("/edit.do")
+  public String edit(@RequestParam int uploadNo, Model model) {
+    model.addAttribute("upload", uploadService.getUploadByNo(uploadNo));
+    return "upload/edit";
+  }
+  
+  // 커맨드 객체로 받은 것(edit 안에 있는 title, contents, userNo 3가지 받ㅇ옴)
+  @PostMapping("/modify.do")
+  public String modify(UploadDto upload, RedirectAttributes redirectAttributes) {
+    redirectAttributes.addFlashAttribute("updateCount", uploadService.modifyUpload(upload));
+    return "redirect:/upload/detail.do?uploadNo=" + upload.getUploadNo();
+    // ★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★ 받아오는 정보가 확실히 다 있는지 확인하고 코드 짜기! ★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★
+    // uploadNo 가 edit 에서 불러온게 없기 때문에 uploadNo hidden 값으로 불러와줌
+    // ★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★ 받아오는 정보가 확실히 다 있는지 확인하고 코드 짜기! ★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★
+    // return "redirect:/upload/list.do"
   }
   
 }

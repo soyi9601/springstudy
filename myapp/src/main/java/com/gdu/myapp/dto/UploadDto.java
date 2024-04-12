@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 @Data
 @Builder
 public class UploadDto {
-  // Dto 는 기본적으로 table  rhk 1:1 매칭을 하지만 꼭 그렇게만 할 필요는 없다.
+  // Dto 는 기본적으로 table과 1:1 매칭을 하지만 꼭 그렇게만 할 필요는 없다.
   private int uploadNo;
   private String title, contents, createDt, modifyDt;
   private UserDto user;
